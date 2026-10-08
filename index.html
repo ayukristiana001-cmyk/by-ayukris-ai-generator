@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Generator By Ayukris</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg,#fff7d6,#ffe4f1,#e5f3ff);
+  min-height: 100vh;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 25px 18px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.logo {
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  border-radius: 20px;
+  background: linear-gradient(135deg,#ff8a00,#ff3d81);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  color: white;
+  box-shadow: 0 8px 20px #0002;
+}
+
+h1 {
+  margin: 12px 0 5px;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+}
+
+.card {
+  background: rgba(255,255,255,.9);
+  border-radius: 22px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 25px #0001;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 8px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  padding: 14px;
+  border-radius: 13px;
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.generate {
+  background: linear-gradient(135deg,#ff7a00,#ff267f);
+  color: white;
+}
+
+.copy {
+  background: #222;
+  color: white;
+}
+
+.result {
+  display: none;
+}
+
+#output {
+  background: #f7f7f7;
+  padding: 15px;
+  border-radius: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  margin-top: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="logo">✨</div>
+    <h1>AI Generator</h1>
+    <div class="subtitle">Buat ide & prompt dengan mudah</div>
+    <div class="subtitle"><b>By Ayukris</b></div>
+  </div>
+
+  <div class="card">
+
+    <label>🎯 Mau membuat apa?</label>
+    <select id="category">
+      <option>Konten TikTok</option>
+      <option>Produk Digital</option>
+      <option>Worksheet Anak</option>
+      <option>Desain Poster</option>
+      <option>Caption Jualan</option>
+      <option>Ide Bisnis</option>
+    </select>
+
+    <label>💡 Topik</label>
+    <input id="topic" placeholder="Contoh: worksheet belajar anak">
+
+    <label>🎨 Gaya</label>
+    <select id="style">
+      <option>Menarik dan profesional</option>
+      <option>Ceria dan colorful</option>
+      <option>Minimalis dan elegan</option>
+      <option>Lucu dan ramah anak</option>
+      <option>Modern dan kekinian</option>
+    </select>
+
+    <label>📝 Detail tambahan</label>
+    <textarea id="detail" placeholder="Tuliskan detail yang kamu inginkan..."></textarea>
+
+    <button class="generate" onclick="generatePrompt()">
+      ✨ GENERATE
+    </button>
+
+  </div>
+
+  <div class="card result" id="result">
+
+    <h3>🎉 Hasil Generator</h3>
+
+    <div id="output"></div>
+
+    <button class="copy" onclick="copyResult()">
+      📋 Salin Hasil
+    </button>
+
+  </div>
+
+  <div class="footer">
+    © 2026 AI Generator By Ayukris
+  </div>
+
+</div>
+
+<script>
+
+function generatePrompt() {
+
+  const category = document.getElementById("category").value;
+  const topic = document.getElementById("topic").value;
+  const style = document.getElementById("style").value;
+  const detail = document.getElementById("detail").value;
+
+  if (!topic.trim()) {
+    alert("Silakan isi topik terlebih dahulu 😊");
+    return;
+  }
+
+  let prompt = `Buatkan ${category.toLowerCase()} dengan topik "${topic}".
+
+Gaya:
+${style}.
+
+Detail:
+${detail || "Buat hasil yang menarik, mudah dipahami dan cocok untuk target pengguna."}
+
+Pastikan hasilnya:
+- Menarik perhatian
+- Terlihat profesional
+- Mudah digunakan
+- Memiliki struktur yang jelas
+- Cocok untuk kebutuhan digital saat ini
+
+Buat hasil terbaik dan kreatif.`;
+
+  document.getElementById("output").textContent = prompt;
+  document.getElementById("result").style.display = "block";
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}
+
+function copyResult() {
+
+  const text = document.getElementById("output").textContent;
+
+  navigator.clipboard.writeText(text).then(function() {
+    alert("Hasil berhasil disalin! ✅");
+  });
+
+}
+
+</script>
+
+</body>
+</html>
