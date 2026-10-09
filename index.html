@@ -367,5 +367,143 @@
             historyGrid.prepend(card);
         }
     </script>
+    <script>
+    let selectedRatio = "1:1";
+    let currentPrompt = "";
+
+    const ratioBtns = document.querySelectorAll('.ratio-btn');
+    ratioBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            ratioBtns.forEach(b => {
+                b.classList.remove('bg-pink-50', 'text-pink-600', 'border-pink-400', 'font-semibold');
+                b.classList.add('bg-white', 'text-gray-600', 'font-medium');
+            });
+            btn.classList.remove('bg-white', 'text-gray-600', 'font-medium');
+            btn.classList.add('bg-pink-50', 'text-pink-600', 'border-pink-400', 'font-semibold');
+            selectedRatio = btn.getAttribute('data-ratio');
+        });
+    });
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        toastMsg.innerText = message;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+    }
+
+    document.getElementById('generatorForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const category = document.getElementById('category').value;
+        const topic = document.getElementById('topic').value.trim();
+        let style = document.getElementById('style').value;
+        const details = document.getElementById('details').value.trim();
+
+        if (!topic) {
+            showToast("Mohon isi topik terlebih dahulu!");
+            return;
+        }
+
+        // Jika memilih Halaman Mewarnai, paksa gaya menjadi Line Art Hitam-Putih
+        if (category.includes("coloring page")) {
+            style = "black and white coloring book page for kids, thick clean outlines, vector line art, simple drawing, no shading, no color, full white background";
+        }
+
+        currentPrompt = `${category}, ${topic}, ${style}${details ? ', ' + details : ''}`;
+        
+        let width = 512;
+        let height = 512;
+        if (selectedRatio === "3:4") {
+            width = 512;
+            height = 682;
+        } else if (selectedRatio === "16:9") {
+            width = 640;
+            height = 360;
+        }
+
+        const seed = Math.floor(Math.random() * 1000000);
+        const encodedPrompt = encodeURIComponent(currentPrompt);
+
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+
+        document.getElementById('placeholderState').classList.add('hidden');
+        document.getElementById('resultImage').classList.add('hidden');
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('loadingState').classList.add('flex');
+        document.getElementById('generateBtn').disabled = true;
+        document.getElementById('generateBtn').classList.add('opacity-70');
+
+        const img = document.getElementById('resultImage');
+
+        const tempImg = new Image();
+        tempImg.src = imageUrl;
+
+        tempImg.onload = function() {
+            img.src = imageUrl;
+            document.getElementById('loadingState').classList.remove('flex');
+            document.getElementById('loadingState').classList.add('hidden');
+            img.classList.remove('hidden');
+            
+            document.getElementById('promptContainer').classList.remove('hidden');
+            document.getElementById('promptText').innerText = currentPrompt;
+            document.getElementById('actionButtons').classList.remove('hidden');
+
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('generateBtn').classList.remove('opacity-70');
+
+            addToHistory(imageUrl, currentPrompt);
+            showToast("Gambar berhasil di-generate!");
+        };
+
+        tempImg.onerror = function() {
+            document.getElementById('loadingState').classList.remove('flex');
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('placeholderState').classList.remove('hidden');
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('generateBtn').classList.remove('opacity-70');
+            showToast("Gagal memuat gambar. Silakan klik Generate lagi!");
+        };
+    });
+
+    document.getElementById('copyPromptBtn').addEventListener('click', function() {
+        if (!currentPrompt) return;
+        navigator.clipboard.writeText(currentPrompt).then(() => {
+            showToast("Prompt berhasil disalin!");
+        });
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        const img = document.getElementById('resultImage');
+        if (!img.src) return;
+        window.open(img.src, '_blank');
+    });
+
+    function addToHistory(url, promptText) {
+        const emptyHistory = document.getElementById('emptyHistory');
+        if (emptyHistory) emptyHistory.remove();
+
+        const historyGrid = document.getElementById('historyGrid');
+        
+        const card = document.createElement('div');
+        card.className = "group relative rounded-xl overflow-hidden border border-gray-200 bg-white aspect-square shadow-sm cursor-pointer hover:shadow-md transition";
+        card.innerHTML = `
+            <img src="${url}" class="w-full h-full object-cover" alt="History">
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center">
+                <p class="text-[10px] text-white line-clamp-3">${promptText}</p>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            document.getElementById('resultImage').src = url;
+            document.getElementById('promptText').innerText = promptText;
+            showToast("Menampilkan gambar dari riwayat!");
+        });
+
+        historyGrid.prepend(card);
+    }
+</script>
 </body>
 </html>
