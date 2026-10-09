@@ -79,13 +79,13 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">🎯 Pilihan Kategori</label>
                         <select id="category" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition">
-                            <option value="Worksheet Anak">Worksheet Anak</option>
-                            <option value="Cover Buku Aktivitas">Cover Buku Aktivitas</option>
-                            <option value="Poster Edukasi">Poster Edukasi</option>
-                            <option value="Ilustrasi Kartun">Ilustrasi Kartun</option>
-                            <option value="Halaman Mewarnai">Halaman Mewarnai (Coloring Page)</option>
-                            <option value="Logo Kreatif">Logo Kreatif</option>
-                            <option value="Desain Bebas">Desain Bebas</option>
+                            <option value="Kids worksheet illustration">Worksheet Anak</option>
+                            <option value="Activity book cover design">Cover Buku Aktivitas</option>
+                            <option value="Educational poster">Poster Edukasi</option>
+                            <option value="Cute cartoon illustration">Ilustrasi Kartun</option>
+                            <option value="Black and white coloring page for kids">Halaman Mewarnai (Coloring Page)</option>
+                            <option value="Creative logo design">Logo Kreatif</option>
+                            <option value="Freeform design">Desain Bebas</option>
                         </select>
                     </div>
 
@@ -100,12 +100,12 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">🎨 Gaya Seni / Visual</label>
                         <select id="style" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition">
-                            <option value="Cute 3D Render, colorful, soft lighting, vibrant">Menarik & Profesional (3D Cute)</option>
-                            <option value="Line art, black and white coloring book style, clean lines">Buku Mewarnai (Black & White Line Art)</option>
+                            <option value="Cute 3D render style, colorful, soft lighting, vibrant, 8k resolution">Menarik & Profesional (3D Cute)</option>
+                            <option value="Line art, clean black and white outline coloring book style, no shadow">Buku Mewarnai (Black & White Line Art)</option>
                             <option value="Soft watercolor illustration, pastel colors, gentle style">Cat Air (Watercolor Pastel)</option>
-                            <option value="Flat vector illustration, modern design, bright colors">Vektor Minimalis (Flat Vector)</option>
-                            <option value="Disney Pixar style 3D animation, expressive, high quality">Gaya Animasi Pixar/Disney</option>
-                            <option value="Realistic photo style, highly detailed, studio lighting">Fotorealistik</option>
+                            <option value="Flat vector illustration, modern minimalist design, bright colors">Vektor Minimalis (Flat Vector)</option>
+                            <option value="Pixar 3D animation style, highly detailed, cute character">Gaya Animasi Pixar/Disney</option>
+                            <option value="Photorealistic style, highly detailed, studio lighting">Fotorealistik</option>
                         </select>
                     </div>
 
@@ -202,7 +202,7 @@
     </div>
 
     <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2">
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
         <i class="fa-solid fa-circle-check text-green-400"></i>
         <span id="toastMsg">Pesan Notifikasi</span>
     </div>
@@ -210,8 +210,6 @@
     <script>
         let selectedRatio = "1:1";
         let currentPrompt = "";
-        let currentImageUrl = "";
-        let retryCount = 0;
 
         const ratioBtns = document.querySelectorAll('.ratio-btn');
         ratioBtns.forEach(btn => {
@@ -249,8 +247,7 @@
                 return;
             }
 
-            currentPrompt = `${category} featuring ${topic}, ${style}. ${details ? 'Details: ' + details : ''}`;
-            retryCount = 0;
+            currentPrompt = `${category}, ${topic}, ${style}${details ? ', ' + details : ''}`;
             
             let width = 512;
             let height = 512;
@@ -262,11 +259,11 @@
                 height = 360;
             }
 
-            const seed = Math.floor(Math.random() * 999999);
+            const seed = Math.floor(Math.random() * 1000000);
             const encodedPrompt = encodeURIComponent(currentPrompt);
 
-            // Primary URL format
-            currentImageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+            // Format URL paling kompatibel
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
 
             document.getElementById('placeholderState').classList.add('hidden');
             document.getElementById('resultImage').classList.add('hidden');
@@ -277,7 +274,12 @@
 
             const img = document.getElementById('resultImage');
 
-            img.onload = function() {
+            // Gunakan Image Object terpisah untuk memastikan caching & loading bersih
+            const tempImg = new Image();
+            tempImg.src = imageUrl;
+
+            tempImg.onload = function() {
+                img.src = imageUrl;
                 document.getElementById('loadingState').classList.remove('flex');
                 document.getElementById('loadingState').classList.add('hidden');
                 img.classList.remove('hidden');
@@ -289,61 +291,56 @@
                 document.getElementById('generateBtn').disabled = false;
                 document.getElementById('generateBtn').classList.remove('opacity-70');
 
-                addToHistory(img.src, currentPrompt);
+                addToHistory(imageUrl, currentPrompt);
                 showToast("Gambar berhasil di-generate!");
             };
 
-            img.onerror = function() {
-                if (retryCount === 0) {
-                    retryCount++;
-                    // Fallback URL format
-                    const fallbackUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
-                    img.src = fallbackUrl;
-                } else if (retryCount === 1) {
-                    retryCount++;
-                    // Alternative fallback endpoint
-                    const altUrl = `https://pollinations.ai/p/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}`;
-                    img.src = altUrl;
-                } else {
+            tempImg.onerror = function() {
+                // Cadangan server jika endpoint utama lambat
+                const backupUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&nologo=true`;
+                
+                const backupImg = new Image();
+                backupImg.src = backupUrl;
+
+                backupImg.onload = function() {
+                    img.src = backupUrl;
+                    document.getElementById('loadingState').classList.remove('flex');
+                    document.getElementById('loadingState').classList.add('hidden');
+                    img.classList.remove('hidden');
+                    
+                    document.getElementById('promptContainer').classList.remove('hidden');
+                    document.getElementById('promptText').innerText = currentPrompt;
+                    document.getElementById('actionButtons').classList.remove('hidden');
+
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('generateBtn').classList.remove('opacity-70');
+
+                    addToHistory(backupUrl, currentPrompt);
+                    showToast("Gambar berhasil di-generate!");
+                };
+
+                backupImg.onerror = function() {
                     document.getElementById('loadingState').classList.remove('flex');
                     document.getElementById('loadingState').classList.add('hidden');
                     document.getElementById('placeholderState').classList.remove('hidden');
                     document.getElementById('generateBtn').disabled = false;
                     document.getElementById('generateBtn').classList.remove('opacity-70');
-                    showToast("Gagal memuat gambar. Silakan coba lagi!");
-                }
+                    showToast("Gagal memuat gambar. Silakan klik Generate lagi!");
+                };
             };
-
-            img.src = currentImageUrl;
         });
 
         document.getElementById('copyPromptBtn').addEventListener('click', function() {
             if (!currentPrompt) return;
             navigator.clipboard.writeText(currentPrompt).then(() => {
-                showToast("Prompt berhasil disalin ke clipboard!");
+                showToast("Prompt berhasil disalin!");
             });
         });
 
-        document.getElementById('downloadBtn').addEventListener('click', async function() {
+        document.getElementById('downloadBtn').addEventListener('click', function() {
             const img = document.getElementById('resultImage');
             if (!img.src) return;
-            try {
-                showToast("Mempersiapkan unduhan...");
-                const response = await fetch(img.src);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-                
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = `Ayukris-AI-${Date.now()}.jpg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(blobUrl);
-                showToast("Gambar berhasil diunduh!");
-            } catch (err) {
-                window.open(img.src, '_blank');
-            }
+            window.open(img.src, '_blank');
         });
 
         function addToHistory(url, promptText) {
