@@ -1,241 +1,400 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Generator By Ayukris</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator By Ayukris</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            pink: '#ff758c',
+                            purple: '#a17fe0',
+                            peach: '#ff7eb3',
+                            light: '#fdfbfb'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fff0f5 0%, #e6e6fa 50%, #ffe4e1 100%);
+            min-height: 100vh;
+        }
 
-<style>
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
+        .gradient-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            transition: all 0.3s ease;
+        }
 
-body {
-  margin: 0;
-  background: linear-gradient(135deg,#fff7d6,#ffe4f1,#e5f3ff);
-  min-height: 100vh;
-  color: #333;
-}
+        .gradient-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(255, 65, 108, 0.5);
+        }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 25px 18px;
-}
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
 
-.header {
-  text-align: center;
-  margin-bottom: 22px;
-}
+        /* Custom Loader Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff416c;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
 
-.logo {
-  width: 70px;
-  height: 70px;
-  margin: auto;
-  border-radius: 20px;
-  background: linear-gradient(135deg,#ff8a00,#ff3d81);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 35px;
-  color: white;
-  box-shadow: 0 8px 20px #0002;
-}
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-h1 {
-  margin: 12px 0 5px;
-  font-size: 28px;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 14px;
-}
-
-.card {
-  background: rgba(255,255,255,.9);
-  border-radius: 22px;
-  padding: 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 25px #0001;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin: 14px 0 8px;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-size: 15px;
-  outline: none;
-}
-
-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-button {
-  width: 100%;
-  border: 0;
-  padding: 14px;
-  border-radius: 13px;
-  margin-top: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.generate {
-  background: linear-gradient(135deg,#ff7a00,#ff267f);
-  color: white;
-}
-
-.copy {
-  background: #222;
-  color: white;
-}
-
-.result {
-  display: none;
-}
-
-#output {
-  background: #f7f7f7;
-  padding: 15px;
-  border-radius: 13px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: #777;
-  margin-top: 25px;
-}
-</style>
+        .image-placeholder {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+    </style>
 </head>
+<body class="font-sans text-gray-800 antialiased p-4 md:p-8">
 
-<body>
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 mb-2">
+                ✨ AI Image Generator By Ayukris
+            </h1>
+            <p class="text-gray-600 font-medium">Ubah ide dan konsep tulisanmu menjadi gambar digital secara otomatis!</p>
+        </header>
 
-<div class="container">
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-  <div class="header">
-    <div class="logo">✨</div>
-    <h1>AI Generator</h1>
-    <div class="subtitle">Buat ide & prompt dengan mudah</div>
-    <div class="subtitle"><b>By Ayukris</b></div>
-  </div>
+            <!-- Left Side: Input Form -->
+            <div class="glass-card rounded-3xl p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-pink-500"></i> Pengaturan Gambar
+                </h2>
 
-  <div class="card">
+                <form id="generatorForm" class="space-y-5">
+                    <!-- Kategori -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">🎯 Pilihan Kategori</label>
+                        <select id="category" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition">
+                            <option value="Worksheet Anak">Worksheet Anak</option>
+                            <option value="Cover Buku Aktivitas">Cover Buku Aktivitas</option>
+                            <option value="Poster Edukasi">Poster Edukasi</option>
+                            <option value="Ilustrasi Kartun">Ilustrasi Kartun</option>
+                            <option value="Halaman Mewarnai">Halaman Mewarnai (Coloring Page)</option>
+                            <option value="Logo Kreatif">Logo Kreatif</option>
+                            <option value="Desain Bebas">Desain Bebas</option>
+                        </select>
+                    </div>
 
-    <label>🎯 Mau membuat apa?</label>
-    <select id="category">
-      <option>Konten TikTok</option>
-      <option>Produk Digital</option>
-      <option>Worksheet Anak</option>
-      <option>Desain Poster</option>
-      <option>Caption Jualan</option>
-      <option>Ide Bisnis</option>
-    </select>
+                    <!-- Topik / Deskripsi -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">💡 Topik / Prompt Deskripsi</label>
+                        <input type="text" id="topic" placeholder="Contoh: Buah-buahan ceria, Hewan Hutan, Planet" required
+                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition">
+                    </div>
 
-    <label>💡 Topik</label>
-    <input id="topic" placeholder="Contoh: worksheet belajar anak">
+                    <!-- Gaya Visual -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">🎨 Gaya Seni / Visual</label>
+                        <select id="style" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition">
+                            <option value="Cute 3D Render, colorful, soft lighting, vibrant">Menarik & Profesional (3D Cute)</option>
+                            <option value="Line art, black and white coloring book style, clean lines">Buku Mewarnai (Black & White Line Art)</option>
+                            <option value="Soft watercolor illustration, pastel colors, gentle style">Cat Air (Watercolor Pastel)</option>
+                            <option value="Flat vector illustration, modern design, bright colors">Vektor Minimalis (Flat Vector)</option>
+                            <option value="Disney Pixar style 3D animation, expressive, high quality">Gaya Animasi Pixar/Disney</option>
+                            <option value="Realistic photo style, highly detailed, studio lighting">Fotorealistik</option>
+                        </select>
+                    </div>
 
-    <label>🎨 Gaya</label>
-    <select id="style">
-      <option>Menarik dan profesional</option>
-      <option>Ceria dan colorful</option>
-      <option>Minimalis dan elegan</option>
-      <option>Lucu dan ramah anak</option>
-      <option>Modern dan kekinian</option>
-    </select>
+                    <!-- Aspect Ratio / Ukuran -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">📐 Ukuran / Aspect Ratio</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" data-ratio="1:1" class="ratio-btn px-3 py-2 rounded-xl border border-gray-300 bg-pink-50 text-pink-600 font-semibold border-pink-400 text-sm transition text-center">
+                                🟩 1:1 (Square)
+                            </button>
+                            <button type="button" data-ratio="3:4" class="ratio-btn px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 font-medium text-sm transition text-center">
+                                📱 3:4 (Portrait)
+                            </button>
+                            <button type="button" data-ratio="16:9" class="ratio-btn px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 font-medium text-sm transition text-center">
+                                🖥️ 16:9 (Landscape)
+                            </button>
+                        </div>
+                    </div>
 
-    <label>📝 Detail tambahan</label>
-    <textarea id="detail" placeholder="Tuliskan detail yang kamu inginkan..."></textarea>
+                    <!-- Detail Tambahan -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">📝 Detail Tambahan (Opsional)</label>
+                        <textarea id="details" rows="3" placeholder="Contoh: Warna-warni pastel, latar belakang bersih, pencahayaan lembut"
+                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 transition"></textarea>
+                    </div>
 
-    <button class="generate" onclick="generatePrompt()">
-      ✨ GENERATE
-    </button>
+                    <!-- Tombol Submit -->
+                    <button type="submit" id="generateBtn" class="w-full py-4 text-white font-bold rounded-2xl gradient-btn flex items-center justify-center gap-2 shadow-lg">
+                        <span>✨ GENERATE GAMBAR</span>
+                    </button>
+                </form>
+            </div>
 
-  </div>
+            <!-- Right Side: Preview Result -->
+            <div class="glass-card rounded-3xl p-6 md:p-8 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-image text-purple-500"></i> Hasil AI Gambar
+                    </h2>
 
-  <div class="card result" id="result">
+                    <!-- Preview Container -->
+                    <div id="previewBox" class="w-full min-h-[320px] max-h-[450px] image-placeholder rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center overflow-hidden relative p-4 text-center">
+                        
+                        <!-- Placeholder text -->
+                        <div id="placeholderState" class="space-y-2">
+                            <i class="fa-regular fa-images text-5xl text-gray-400"></i>
+                            <p class="text-gray-500 font-medium text-sm">Isi formulir di sebelah kiri lalu klik<br><strong class="text-pink-500">Generate Gambar</strong></p>
+                        </div>
 
-    <h3>🎉 Hasil Generator</h3>
+                        <!-- Loading State -->
+                        <div id="loadingState" class="hidden flex-col items-center justify-center space-y-4">
+                            <div class="loader"></div>
+                            <p class="text-gray-600 font-medium animate-pulse text-sm">Sedang melukis gambar kamu...<br><span class="text-xs text-gray-400">(Selesai dalam 5-10 detik)</span></p>
+                        </div>
 
-    <div id="output"></div>
+                        <!-- Image Render -->
+                        <img id="resultImage" class="hidden w-full h-full object-contain rounded-xl shadow-md transition-all duration-300" alt="Hasil AI Generator">
+                    </div>
 
-    <button class="copy" onclick="copyResult()">
-      📋 Salin Hasil
-    </button>
+                    <!-- Prompt Display -->
+                    <div id="promptContainer" class="hidden mt-4 p-3 bg-white/70 rounded-xl border border-gray-200">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">PROMPT YANG DIGUNAKAN:</p>
+                        <p id="promptText" class="text-xs text-gray-700 italic max-h-16 overflow-y-auto"></p>
+                    </div>
+                </div>
 
-  </div>
+                <!-- Action Buttons -->
+                <div id="actionButtons" class="hidden grid grid-cols-2 gap-3 mt-6">
+                    <button id="downloadBtn" class="py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
+                        <i class="fa-solid fa-download"></i> Unduh Gambar
+                    </button>
+                    <button id="copyPromptBtn" class="py-3 px-4 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
+                        <i class="fa-regular fa-copy"></i> Salin Prompt
+                    </button>
+                </div>
+            </div>
 
-  <div class="footer">
-    © 2026 AI Generator By Ayukris
-  </div>
+        </div>
 
-</div>
+        <!-- History Gallery -->
+        <section class="mt-12 glass-card rounded-3xl p-6 md:p-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i> Riwayat Hasil Generate
+            </h3>
+            <div id="historyGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <p id="emptyHistory" class="text-xs text-gray-400 col-span-full italic">Belum ada gambar yang di-generate dalam sesi ini.</p>
+            </div>
+        </section>
 
-<script>
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-xs text-gray-500">
+            © 2026 AI Image Generator By Ayukris. Powered by Pollinations AI.
+        </footer>
+    </div>
 
-function generatePrompt() {
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toastMsg">Pesan Notifikasi</span>
+    </div>
 
-  const category = document.getElementById("category").value;
-  const topic = document.getElementById("topic").value;
-  const style = document.getElementById("style").value;
-  const detail = document.getElementById("detail").value;
+    <script>
+        // State management variables
+        let selectedRatio = "1:1";
+        let currentPrompt = "";
+        let currentImageUrl = "";
 
-  if (!topic.trim()) {
-    alert("Silakan isi topik terlebih dahulu 😊");
-    return;
-  }
+        // Aspect ratio buttons handler
+        const ratioBtns = document.querySelectorAll('.ratio-btn');
+        ratioBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                ratioBtns.forEach(b => {
+                    b.classList.remove('bg-pink-50', 'text-pink-600', 'border-pink-400', 'font-semibold');
+                    b.classList.add('bg-white', 'text-gray-600', 'font-medium');
+                });
+                btn.classList.remove('bg-white', 'text-gray-600', 'font-medium');
+                btn.classList.add('bg-pink-50', 'text-pink-600', 'border-pink-400', 'font-semibold');
+                selectedRatio = btn.getAttribute('data-ratio');
+            });
+        });
 
-  let prompt = `Buatkan ${category.toLowerCase()} dengan topik "${topic}".
+        // Toast notification handler
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
 
-Gaya:
-${style}.
+        // Form Submit Handler
+        document.getElementById('generatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-Detail:
-${detail || "Buat hasil yang menarik, mudah dipahami dan cocok untuk target pengguna."}
+            const category = document.getElementById('category').value;
+            const topic = document.getElementById('topic').value.trim();
+            const style = document.getElementById('style').value;
+            const details = document.getElementById('details').value.trim();
 
-Pastikan hasilnya:
-- Menarik perhatian
-- Terlihat profesional
-- Mudah digunakan
-- Memiliki struktur yang jelas
-- Cocok untuk kebutuhan digital saat ini
+            if (!topic) {
+                showToast("Mohon isi topik terlebih dahulu!");
+                return;
+            }
 
-Buat hasil terbaik dan kreatif.`;
+            // Constructing Prompt for Pollinations API
+            currentPrompt = `${category} featuring ${topic}, ${style}. ${details ? 'Details: ' + details : ''}`;
+            
+            // Get dimensions based on selected aspect ratio
+            let width = 800;
+            let height = 800;
+            if (selectedRatio === "3:4") {
+                width = 768;
+                height = 1024;
+            } else if (selectedRatio === "16:9") {
+                width = 1024;
+                height = 576;
+            }
 
-  document.getElementById("output").textContent = prompt;
-  document.getElementById("result").style.display = "block";
+            // Generate unique seed to prevent cached results
+            const seed = Math.floor(Math.random() * 999999);
+            const encodedPrompt = encodeURIComponent(currentPrompt);
+            currentImageUrl = `https://pollinations.ai/p/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
 
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: "smooth"
-  });
-}
+            // UI State updates
+            document.getElementById('placeholderState').classList.add('hidden');
+            document.getElementById('resultImage').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('loadingState').classList.add('flex');
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtn').classList.add('opacity-70');
 
-function copyResult() {
+            // Image loading process
+            const img = document.getElementById('resultImage');
+            img.src = currentImageUrl;
 
-  const text = document.getElementById("output").textContent;
+            img.onload = function() {
+                document.getElementById('loadingState').classList.remove('flex');
+                document.getElementById('loadingState').classList.add('hidden');
+                img.classList.remove('hidden');
+                
+                // Show Prompt and Action buttons
+                document.getElementById('promptContainer').classList.remove('hidden');
+                document.getElementById('promptText').innerText = currentPrompt;
+                document.getElementById('actionButtons').classList.remove('hidden');
 
-  navigator.clipboard.writeText(text).then(function() {
-    alert("Hasil berhasil disalin! ✅");
-  });
+                // Enable generate button
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('generateBtn').classList.remove('opacity-70');
 
-}
+                // Add to history
+                addToHistory(currentImageUrl, currentPrompt);
+                showToast("Gambar berhasil di-generate!");
+            };
 
-</script>
+            img.onerror = function() {
+                document.getElementById('loadingState').classList.remove('flex');
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('placeholderState').classList.remove('hidden');
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('generateBtn').classList.remove('opacity-70');
+                showToast("Gagal memuat gambar. Silakan coba lagi!");
+            };
+        });
 
+        // Copy Prompt Button
+        document.getElementById('copyPromptBtn').addEventListener('click', function() {
+            if (!currentPrompt) return;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = currentPrompt;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast("Prompt berhasil disalin ke clipboard!");
+        });
+
+        // Download Image Button
+        document.getElementById('downloadBtn').addEventListener('click', async function() {
+            if (!currentImageUrl) return;
+            try {
+                showToast("Mempersiapkan unduhan...");
+                const response = await fetch(currentImageUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `Ayukris-AI-${Date.now()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+                showToast("Gambar berhasil diunduh!");
+            } catch (err) {
+                // Fallback for direct link download
+                window.open(currentImageUrl, '_blank');
+            }
+        });
+
+        // Add item to history
+        function addToHistory(url, promptText) {
+            const emptyHistory = document.getElementById('emptyHistory');
+            if (emptyHistory) emptyHistory.remove();
+
+            const historyGrid = document.getElementById('historyGrid');
+            
+            const card = document.createElement('div');
+            card.className = "group relative rounded-xl overflow-hidden border border-gray-200 bg-white aspect-square shadow-sm cursor-pointer hover:shadow-md transition";
+            card.innerHTML = `
+                <img src="${url}" class="w-full h-full object-cover" alt="History">
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center">
+                    <p class="text-[10px] text-white line-clamp-3">${promptText}</p>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                document.getElementById('resultImage').src = url;
+                document.getElementById('promptText').innerText = promptText;
+                currentImageUrl = url;
+                currentPrompt = promptText;
+                showToast("Menampilkan gambar dari riwayat!");
+            });
+
+            historyGrid.prepend(card);
+        }
+    </script>
 </body>
 </html>
+```
