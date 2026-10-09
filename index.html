@@ -10,25 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            pink: '#ff758c',
-                            purple: '#a17fe0',
-                            peach: '#ff7eb3',
-                            light: '#fdfbfb'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         body {
             background: linear-gradient(135deg, #fff0f5 0%, #e6e6fa 50%, #ffe4e1 100%);
@@ -53,7 +34,6 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        /* Custom Loader Spinner */
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #ff416c;
@@ -133,7 +113,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">📐 Ukuran / Aspect Ratio</label>
                         <div class="grid grid-cols-3 gap-2">
-                            <button type="button" data-ratio="1:1" class="ratio-btn px-3 py-2 rounded-xl border border-gray-300 bg-pink-50 text-pink-600 font-semibold border-pink-400 text-sm transition text-center">
+                            <button type="button" data-ratio="1:1" class="ratio-btn px-3 py-2 rounded-xl border border-pink-400 bg-pink-50 text-pink-600 font-semibold text-sm transition text-center">
                                 🟩 1:1 (Square)
                             </button>
                             <button type="button" data-ratio="3:4" class="ratio-btn px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 font-medium text-sm transition text-center">
@@ -217,7 +197,7 @@
 
         <!-- Footer -->
         <footer class="mt-8 text-center text-xs text-gray-500">
-            © 2026 AI Image Generator By Ayukris. Powered by Pollinations AI.
+            © 2026 AI Image Generator By Ayukris.
         </footer>
     </div>
 
@@ -228,12 +208,11 @@
     </div>
 
     <script>
-        // State management variables
         let selectedRatio = "1:1";
         let currentPrompt = "";
         let currentImageUrl = "";
+        let retryCount = 0;
 
-        // Aspect ratio buttons handler
         const ratioBtns = document.querySelectorAll('.ratio-btn');
         ratioBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -247,7 +226,6 @@
             });
         });
 
-        // Toast notification handler
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
@@ -258,7 +236,6 @@
             }, 3000);
         }
 
-        // Form Submit Handler
         document.getElementById('generatorForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -272,26 +249,25 @@
                 return;
             }
 
-            // Constructing Prompt for Pollinations API
             currentPrompt = `${category} featuring ${topic}, ${style}. ${details ? 'Details: ' + details : ''}`;
+            retryCount = 0;
             
-            // Get dimensions based on selected aspect ratio
-            let width = 800;
-            let height = 800;
+            let width = 512;
+            let height = 512;
             if (selectedRatio === "3:4") {
-                width = 768;
-                height = 1024;
+                width = 512;
+                height = 682;
             } else if (selectedRatio === "16:9") {
-                width = 1024;
-                height = 576;
+                width = 640;
+                height = 360;
             }
 
-            // Generate unique seed to prevent cached results
             const seed = Math.floor(Math.random() * 999999);
             const encodedPrompt = encodeURIComponent(currentPrompt);
-            currentImageUrl = `https://pollinations.ai/p/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
 
-            // UI State updates
+            // Primary URL format
+            currentImageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+
             document.getElementById('placeholderState').classList.add('hidden');
             document.getElementById('resultImage').classList.add('hidden');
             document.getElementById('loadingState').classList.remove('hidden');
@@ -299,57 +275,61 @@
             document.getElementById('generateBtn').disabled = true;
             document.getElementById('generateBtn').classList.add('opacity-70');
 
-            // Image loading process
             const img = document.getElementById('resultImage');
-            img.src = currentImageUrl;
 
             img.onload = function() {
                 document.getElementById('loadingState').classList.remove('flex');
                 document.getElementById('loadingState').classList.add('hidden');
                 img.classList.remove('hidden');
                 
-                // Show Prompt and Action buttons
                 document.getElementById('promptContainer').classList.remove('hidden');
                 document.getElementById('promptText').innerText = currentPrompt;
                 document.getElementById('actionButtons').classList.remove('hidden');
 
-                // Enable generate button
                 document.getElementById('generateBtn').disabled = false;
                 document.getElementById('generateBtn').classList.remove('opacity-70');
 
-                // Add to history
-                addToHistory(currentImageUrl, currentPrompt);
+                addToHistory(img.src, currentPrompt);
                 showToast("Gambar berhasil di-generate!");
             };
 
             img.onerror = function() {
-                document.getElementById('loadingState').classList.remove('flex');
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('placeholderState').classList.remove('hidden');
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('generateBtn').classList.remove('opacity-70');
-                showToast("Gagal memuat gambar. Silakan coba lagi!");
+                if (retryCount === 0) {
+                    retryCount++;
+                    // Fallback URL format
+                    const fallbackUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+                    img.src = fallbackUrl;
+                } else if (retryCount === 1) {
+                    retryCount++;
+                    // Alternative fallback endpoint
+                    const altUrl = `https://pollinations.ai/p/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}`;
+                    img.src = altUrl;
+                } else {
+                    document.getElementById('loadingState').classList.remove('flex');
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('placeholderState').classList.remove('hidden');
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('generateBtn').classList.remove('opacity-70');
+                    showToast("Gagal memuat gambar. Silakan coba lagi!");
+                }
             };
+
+            img.src = currentImageUrl;
         });
 
-        // Copy Prompt Button
         document.getElementById('copyPromptBtn').addEventListener('click', function() {
             if (!currentPrompt) return;
-            const tempInput = document.createElement('textarea');
-            tempInput.value = currentPrompt;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            showToast("Prompt berhasil disalin ke clipboard!");
+            navigator.clipboard.writeText(currentPrompt).then(() => {
+                showToast("Prompt berhasil disalin ke clipboard!");
+            });
         });
 
-        // Download Image Button
         document.getElementById('downloadBtn').addEventListener('click', async function() {
-            if (!currentImageUrl) return;
+            const img = document.getElementById('resultImage');
+            if (!img.src) return;
             try {
                 showToast("Mempersiapkan unduhan...");
-                const response = await fetch(currentImageUrl);
+                const response = await fetch(img.src);
                 const blob = await response.blob();
                 const blobUrl = URL.createObjectURL(blob);
                 
@@ -362,12 +342,10 @@
                 URL.revokeObjectURL(blobUrl);
                 showToast("Gambar berhasil diunduh!");
             } catch (err) {
-                // Fallback for direct link download
-                window.open(currentImageUrl, '_blank');
+                window.open(img.src, '_blank');
             }
         });
 
-        // Add item to history
         function addToHistory(url, promptText) {
             const emptyHistory = document.getElementById('emptyHistory');
             if (emptyHistory) emptyHistory.remove();
@@ -386,8 +364,6 @@
             card.addEventListener('click', () => {
                 document.getElementById('resultImage').src = url;
                 document.getElementById('promptText').innerText = promptText;
-                currentImageUrl = url;
-                currentPrompt = promptText;
                 showToast("Menampilkan gambar dari riwayat!");
             });
 
