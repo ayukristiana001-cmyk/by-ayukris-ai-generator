@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff2b8">
+<title>AI Generator Worksheet — By Ayukris</title>
+<style>
+:root{--ink:#26324b;--pink:#ffd6e7;--yellow:#ffe68a;--blue:#cceeff;--green:#d8f5d0;--purple:#e6dcff;--white:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,#fff8d7,#ffe7f0 50%,#e2f5ff);min-height:100vh}
+.wrap{max-width:820px;margin:auto;padding:22px 16px 40px}
+header{text-align:center;padding:24px 16px 20px;background:#fffdf8;border:3px solid #fff;border-radius:28px;box-shadow:0 8px 0 #f3d5a4}
+.logo{display:inline-block;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:7px 14px;font-size:.82rem;font-weight:900;letter-spacing:.06em}
+h1{font-size:clamp(1.8rem,6vw,3rem);line-height:1.08;margin:16px 0 8px;color:#ff8a37;text-shadow:2px 2px 0 #26324b}
+.subtitle{margin:0 auto;max-width:550px;line-height:1.5}
+.card{margin-top:22px;background:#fffdf8;border:2px solid white;border-radius:24px;padding:22px;box-shadow:0 6px 0 #e6d8c7}
+label{display:block;font-weight:900;margin-bottom:9px}
+input,select{width:100%;padding:14px 15px;border:2px solid #c8d7e8;border-radius:14px;font:inherit;background:white;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:#ff9c59;box-shadow:0 0 0 3px #ffe6c9}
+.hint{font-size:.9rem;color:#59657a;line-height:1.5;margin:9px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+button{border:0;border-radius:14px;padding:14px 16px;font:inherit;font-weight:900;cursor:pointer;transition:transform .12s}
+button:active{transform:scale(.98)}
+.primary{background:#ffb44b;color:#352b24;box-shadow:0 4px 0 #dc8730}
+.secondary{background:#cdeeff;color:#203b55;box-shadow:0 4px 0 #8ac9e8}
+.promptbox{white-space:pre-wrap;overflow-wrap:anywhere;background:#f8f7ff;border:2px dashed #b8a9f4;border-radius:16px;padding:16px;line-height:1.55;font-size:.92rem;max-height:420px;overflow:auto}
+.hidden{display:none}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.feature{padding:14px 10px;text-align:center;border-radius:16px;font-size:.9rem;font-weight:800;line-height:1.4}
+.feature:nth-child(1){background:var(--pink)}.feature:nth-child(2){background:var(--blue)}.feature:nth-child(3){background:var(--green)}
+footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
+.small{font-size:.82rem;color:#626d7f}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.features{grid-template-columns:1fr}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">✨ BY AYUKRIS ✨</div>
+  <h1>AI Generator<br>Worksheet Mewarnai</h1>
+  <p class="subtitle">Buat prompt worksheet edukasi anak yang ceria, dengan gambar untuk diwarnai dan fakta unik. Tinggal masukkan nama objek!</p>
+</header>
+
+<section class="card">
+  <label for="objek">🐱 Nama hewan atau objek</label>
+  <input id="objek" maxlength="80" placeholder="Contoh: kucing, kelinci, apel..." autocomplete="off">
+  <p class="hint">Kamu bisa memasukkan hewan, buah, sayuran, kendaraan, benda, atau topik belajar anak lainnya. Bahasa prompt bisa diubah, tetapi tulisan pada worksheet tetap berbahasa Indonesia.</p>
+  <div class="grid">
+    <div>
+      <label for="usia">Usia anak</label>
+      <select id="usia">
+        <option>PAUD/TK (3–6 tahun)</option>
+        <option>SD kelas 1–2 (6–8 tahun)</option>
+      </select>
+    </div>
+    <div>
+      <label for="bahasa">Bahasa prompt</label>
+      <select id="bahasa">
+        <option value="id">Bahasa Indonesia</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:20px"><button class="primary" id="buat" style="width:100%">🎨 Buat Prompt Worksheet</button></div>
+</section>
+
+<section id="hasil" class="card hidden">
+  <h2 style="margin:0 0 12px">✨ Prompt kamu siap!</h2>
+  <p class="hint" style="margin-bottom:14px">Salin prompt ini, lalu tempelkan ke ChatGPT yang mendukung pembuatan gambar untuk menghasilkan worksheet.</p>
+  <div id="prompt" class="promptbox"></div>
+  <div class="grid">
+    <button class="secondary" id="salin">📋 Salin Prompt</button>
+    <button class="primary" id="chatgpt">💬 Buka ChatGPT</button>
+  </div>
+  <p id="status" class="small" aria-live="polite"></p>
+</section>
+
+<div class="features">
+  <div class="feature">🖍️<br>Gambar hitam putih<br>untuk diwarnai</div>
+  <div class="feature">🌈<br>Bingkai kartun<br>penuh warna</div>
+  <div class="feature">📚<br>Contoh warna dan<br>4 kotak fakta</div>
+</div>
+<footer>
+  <strong>AI Generator Worksheet Mewarnai Anak</strong><br>
+  <span>Produk digital kreatif • By Ayukris</span><br>
+  <p class="small">Catatan: aplikasi ini menyusun prompt. Pembuatan gambar dilakukan di layanan AI yang kamu buka. Periksa ejaan dan fakta sebelum mencetak atau menjual hasilnya.</p>
+</footer>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+let currentPrompt = "";
+function makePrompt(objek, usia, bahasa){
+if (bahasa === "en") {
+return `Create ONE complete children's coloring worksheet page about "${objek}". Generate the image directly, not a text explanation.
+
+FORMAT AND DESIGN:
+1. Use a portrait A4 page layout, high resolution, neat composition, and print-ready quality.
+2. Add a cheerful colorful cartoon frame around the page, with a few small decorations related to the topic. Keep it attractive but not overcrowded.
+3. At the top, display the title "${objek}" in large, bold, playful cartoon lettering that is easy to read.
+4. In the upper-left corner of the content area, just below the title, add a small box labeled "Contoh Warna:" showing a small full-color version of the same ${objek}.
+5. In the center, place a large main illustration of ${objek} for children to color. Use black-and-white clean thick line art, smooth bold outlines, enclosed coloring areas, and a white background. No shading, no gradients, and no gray tones.
+6. At the bottom, create exactly four small educational fact boxes in different harmonious pastel colors. Each box must include a small colorful icon or illustration, a short heading, and one or two simple, accurate sentences. For animals, use true animal facts. For other objects, use facts about their features, purpose, or uses. Do not invent facts.
+7. The target audience is ${usia}. IMPORTANT: All visible words on the worksheet—including the title, the "Contoh Warna:" label, the fact headings, and the facts—must remain in Bahasa Indonesia. Use correct Indonesian spelling, short child-friendly sentences, and readable text. Only this instruction prompt is written in English.
+8. Add the small signature "By Ayukris" at the bottom of the page.
+9. Keep the layout balanced, ensure every element stays inside the frame, keep the main coloring illustration dominant, and avoid cropped or overlapping text.
+10. Do not add any other watermark. Keep the same overall visual style for each topic, while adapting the illustration, color sample, decorations, and accurate facts to "${objek}".
+
+IMPORTANT: Generate one complete worksheet image on a single page. The prompt language is English, but the worksheet's visible text must stay in Bahasa Indonesia.`;
+}
+return `Buat SATU gambar halaman worksheet buku mewarnai anak bertema "${objek}". Langsung hasilkan gambar, bukan penjelasan teks.
+
+FORMAT DAN DESAIN:
+1. Halaman portrait dengan proporsi A4, resolusi tinggi, rapi, dan siap dicetak.
+2. Bingkai kartun berwarna ceria di sekeliling halaman, dekorasi kecil sesuai tema, jangan terlalu ramai.
+3. Di bagian atas, tampilkan judul "${objek}" dalam huruf kartun besar, tebal, jelas, dan mudah dibaca.
+4. Di pojok kiri atas area isi, tepat di bawah judul, tambahkan kotak kecil berlabel "Contoh Warna:" yang menampilkan miniatur ${objek} dalam versi berwarna penuh.
+5. Di tengah halaman, tampilkan ilustrasi utama ${objek} berukuran besar untuk diwarnai: hitam putih, clean thick line art, garis hitam tebal dan bersih, area tertutup yang mudah diwarnai, latar putih, tanpa shading, tanpa gradasi, tanpa warna abu-abu.
+6. Di bagian bawah, buat tepat empat kotak fakta kecil dengan warna pastel berbeda. Setiap kotak berisi ikon/miniilustrasi berwarna, judul singkat, dan satu atau dua kalimat fakta yang benar serta mudah dipahami anak. Jika objek bukan hewan, berikan fakta tentang bentuk, fungsi, kegunaan, atau cirinya. Jangan mengarang fakta.
+7. Target usia: ${usia}. Semua teks yang terlihat pada worksheet harus menggunakan Bahasa Indonesia yang benar, kalimat pendek, dan mudah dibaca anak.
+8. Tambahkan tulisan kecil "By Ayukris" di bagian bawah halaman.
+9. Pastikan tata letak seimbang, semua elemen berada di dalam bingkai, gambar utama tetap dominan, dan tidak ada teks yang terpotong atau bertumpuk.
+10. Jangan menambahkan watermark lain. Pertahankan format visual worksheet edukasi anak yang konsisten, tetapi sesuaikan ilustrasi, warna contoh, dekorasi, dan fakta dengan objek "${objek}".
+
+PENTING: Buat satu gambar worksheet lengkap dalam satu halaman.`;
+}
+$("buat").addEventListener("click",()=>{
+ const obj=$("objek").value.trim();
+ if(!obj){$("objek").focus();$("status").textContent="";alert("Masukkan nama hewan atau objek terlebih dahulu.");return;}
+ currentPrompt=makePrompt(obj,$("usia").value,$("bahasa").value);
+ $("prompt").textContent=currentPrompt;
+ $("hasil").classList.remove("hidden");
+ $("status").textContent="Prompt dibuat untuk: "+obj;
+ $("hasil").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("salin").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(currentPrompt);$("status").textContent="Prompt berhasil disalin. Tempelkan di ChatGPT untuk membuat gambar.";}
+ catch(e){const range=document.createRange();range.selectNodeContents($("prompt"));const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);$("status").textContent="Pilih teks prompt di atas lalu salin secara manual.";}
+});
+$("chatgpt").addEventListener("click",()=>window.open("https://chatgpt.com/","_blank","noopener,noreferrer"));
+$("objek").addEventListener("keydown",e=>{if(e.key==="Enter")$("buat").click();});
+</script>
+</body>
+</html>
