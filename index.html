@@ -128,22 +128,49 @@ learning: `${common}\n\nCreate a complete age-appropriate learning page about th
 };
 return prompts[type];
 }
-$("buat").addEventListener("click",()=>{
- const topic=$("tema").value.trim();
- if(!topic){$("tema").focus();alert("Masukkan tema, objek, atau judul terlebih dahulu.");return;}
- const type=document.querySelector('input[name="jenis"]:checked').value;
- currentPrompt=makePrompt(topic,$("usia").value,$("bahasa").value,type);
- $("prompt").textContent=currentPrompt;
- $("hasil").classList.remove("hidden");
- $("status").textContent="Prompt dibuat untuk: "+types[type]+".";
- $("hasil").scrollIntoView({behavior:"smooth",block:"start"});
+$("buat").addEventListener("click", () => {
+const topic = $("tema").value.trim();
+
+if (!topic) {
+$("tema").focus();
+alert("Masukkan tema, objek, atau judul terlebih dahulu.");
+return;
+}
+
+const type = document.querySelector(
+'input[name="jenis"]:checked'
+).value;
+
+currentPrompt = makePrompt(
+topic,
+$("usia").value,
+$("bahasa").value,
+type
+);
+
+const chatUrl =
+"https://chatgpt.com/?q=" +
+encodeURIComponent(currentPrompt);
+
+window.location.href = chatUrl;
 });
-$("salin").addEventListener("click",async()=>{
- try{await navigator.clipboard.writeText(currentPrompt);$("status").textContent="Prompt berhasil disalin. Tempelkan ke layanan AI pilihanmu.";}
- catch(e){const range=document.createRange();range.selectNodeContents($("prompt"));const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);$("status").textContent="Pilih teks prompt, lalu salin melalui menu perangkat.";}
+
+$("chatgpt").addEventListener("click", () => {
+if (!currentPrompt) {
+alert("Masukkan tema dan tekan Buat Produk terlebih dahulu.");
+return;
+}
+
+window.location.href =
+"https://chatgpt.com/?q=" +
+encodeURIComponent(currentPrompt);
 });
-$("chatgpt").addEventListener("click",()=>window.open("https://chatgpt.com/","_blank","noopener,noreferrer"));
-$("tema").addEventListener("keydown",e=>{if(e.key==="Enter")$("buat").click();});
+
+$("tema").addEventListener("keydown", e => {
+if (e.key === "Enter") {
+$("buat").click();
+}
+});
 </script>
 
 <!-- LOGIN KIDS DIGITAL CREATOR -->
