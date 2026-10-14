@@ -1,1 +1,246 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff2d4">
+<title>Kids Digital Creator</title>
+<style>
+:root{--ink:#263247;--pink:#ffdce7;--yellow:#ffe68a;--blue:#cceeff;--green:#d8f5d0;--purple:#e6dcff;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,#fff8e8,#f7f3ff);line-height:1.5}
+.wrap{max-width:850px;margin:auto;padding:22px 16px 40px}
+header{text-align:center;padding:24px 16px 20px;background:#fffdf8;border:3px solid white;border-radius:28px;box-shadow:0 7px 0 #eadfce}
+.logo{display:inline-block;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:7px 16px;font-weight:900}
+h1{font-size:clamp(2rem,7vw,3.2rem);line-height:1.05;margin:16px 0 10px}
+.subtitle{max-width:620px;margin:0 auto;color:#59657a}
+.card{margin-top:20px;background:#fffdf8;border:2px solid white;border-radius:24px;padding:22px;box-shadow:0 6px 0 #e6d8c7}
+label{display:block;font-weight:900;margin-bottom:8px}
+input,select,textarea{width:100%;padding:13px 14px;border:2px solid #c8d7e8;border-radius:14px;font:inherit;background:white;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:#ff9c59;box-shadow:0 0 0 3px #ffe6c9}
+.hint{font-size:.9rem;color:#59657a;line-height:1.5;margin:8px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.menu label{display:flex;align-items:center;gap:10px;border:2px solid #e4e9f2;border-radius:15px;padding:12px;background:white;cursor:pointer;margin:0}
+.menu input{width:auto;accent-color:#7c67db}
+button{border:0;border-radius:14px;padding:14px 16px;font:inherit;font-weight:900;cursor:pointer}
+button:active{transform:scale(.985)}
+.primary{background:#ffb44b;color:#352b24;box-shadow:0 4px 0 #dc8730}
+.secondary{background:#cdeeff;color:#203b55;box-shadow:0 4px 0 #8ac9e8}
+.promptbox{white-space:pre-wrap;overflow-wrap:anywhere;background:#f8f7ff;border:2px dashed #b8a9f4;border-radius:16px;padding:16px;line-height:1.55;font-size:.92rem;max-height:480px;overflow:auto}
+.hidden{display:none}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.feature{padding:14px 10px;text-align:center;border-radius:16px;font-size:.9rem;font-weight:800}
+.feature:nth-child(1){background:var(--pink)}.feature:nth-child(2){background:var(--blue)}.feature:nth-child(3){background:var(--green)}
+footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
+.small{font-size:.82rem;color:#626d7f}
+@media(max-width:560px){.grid,.menu,.features{grid-template-columns:1fr}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">✨ KIDS DIGITAL CREATOR ✨</div>
+  <h1>Kids Digital<br>Creator</h1>
+  <p class="subtitle">Buat prompt untuk beragam produk digital edukasi anak dalam satu tempat. Pilih jenis produk, masukkan tema, lalu buat prompt.</p>
+</header>
 
+<section class="card">
+  <label>🎨 Pilih jenis produk</label>
+  <div class="menu">
+    <label><input type="radio" name="jenis" value="coloring" checked> 🖍️ Worksheet mewarnai</label>
+    <label><input type="radio" name="jenis" value="activity"> 🧩 Worksheet aktivitas</label>
+    <label><input type="radio" name="jenis" value="story"> 📚 Buku cerita anak</label>
+    <label><input type="radio" name="jenis" value="flashcards"> 🃏 Kartu edukasi</label>
+    <label><input type="radio" name="jenis" value="cover"> 📘 Cover buku</label>
+    <label><input type="radio" name="jenis" value="learning"> 🌈 Materi belajar</label>
+  </div>
+
+  <div style="margin-top:18px">
+    <label for="tema">✏️ Tema, objek, atau judul</label>
+    <input id="tema" maxlength="100" placeholder="Contoh: kucing, angka 1–10, kelinci yang suka menolong..." autocomplete="off">
+    <p class="hint">Masukkan tema dalam Bahasa Indonesia atau Inggris. Prompt akan mengarahkan AI untuk menggunakan bahasa yang sesuai dengan pilihan bahasa produk.</p>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label for="usia">👧 Usia anak</label>
+      <select id="usia">
+        <option>PAUD/TK (3–6 tahun)</option>
+        <option>SD kelas 1–2 (6–8 tahun)</option>
+        <option>SD kelas 3–4 (8–10 tahun)</option>
+      </select>
+    </div>
+    <div>
+      <label for="bahasa">🌐 Bahasa hasil</label>
+      <select id="bahasa">
+        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+        <option value="English">English</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:20px"><button class="primary" id="buat" style="width:100%">✨ Buat Prompt</button></div>
+</section>
+
+<section id="hasil" class="card hidden">
+  <h2 style="margin:0 0 8px">Prompt siap digunakan!</h2>
+  <p class="hint" style="margin-bottom:14px">Salin prompt ini dan tempelkan ke layanan AI yang mendukung pembuatan gambar atau teks. Periksa hasil sebelum dicetak atau dijual.</p>
+  <div id="prompt" class="promptbox"></div>
+  <div class="grid">
+    <button class="secondary" id="salin">📋 Salin Prompt</button>
+    <button class="primary" id="chatgpt">💬 Buka ChatGPT</button>
+  </div>
+  <p id="status" class="small" aria-live="polite"></p>
+</section>
+
+<div class="features">
+  <div class="feature">🧠<br>Beragam produk edukasi</div>
+  <div class="feature">📝<br>Prompt bisa disesuaikan</div>
+  <div class="feature">🖨️<br>Ide produk siap dikembangkan</div>
+</div>
+<footer>
+  <strong>Kids Digital Creator</strong><br>
+  <span class="small">Alat penyusun prompt untuk produk digital anak.</span>
+  <p class="small">Aplikasi ini menyusun prompt, bukan menghasilkan gambar atau buku secara langsung. Hasil dibuat melalui layanan AI yang kamu pilih. Pastikan fakta, ejaan, dan hak penggunaan aset sudah diperiksa sebelum dijual.</p>
+</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let currentPrompt = "";
+const types = {
+coloring: "worksheet mewarnai anak",
+activity: "worksheet aktivitas edukasi anak",
+story: "buku cerita anak",
+flashcards: "kartu edukasi anak",
+cover: "cover buku anak",
+learning: "materi belajar anak"
+};
+function makePrompt(topic, age, lang, type) {
+const common = `Create a complete, polished ${types[type]} about "${topic}". Target age: ${age}. All visible text must be written naturally and correctly in ${lang}. Use age-appropriate vocabulary, correct spelling, clear hierarchy, and a child-friendly design. Topic: "${topic}". If the topic was entered in another language, understand and translate or normalize it naturally for the selected output language. Do not include any creator name, brand name, signature, logo, or watermark.`;
+const prompts = {
+coloring: `${common}\n\nFORMAT: One portrait A4 printable worksheet page, high resolution. Add a cheerful colorful cartoon border with a few topic-related decorations. Place a large playful title at the top. Add a small color-example box near the upper-left showing a full-color miniature of the main subject. Center one large black-and-white coloring illustration with thick smooth enclosed outlines, white background, no shading, no gradients, and no gray tones. At the bottom add exactly four pastel educational fact boxes, each with a small colorful icon, short heading, and one or two accurate child-friendly sentences. For non-animal topics, use accurate facts about features, uses, or functions. Keep all elements balanced and inside the page.`,
+activity: `${common}\n\nCreate one print-ready portrait A4 activity worksheet. Choose suitable activities based on the topic, such as tracing lines or letters, counting, matching, simple maze, shadow matching, spot-the-difference, sorting, or beginning coding paths. Include clear short instructions, generous writing space, simple child-friendly illustrations, and a balanced layout. Make activities appropriate for the selected age. Avoid ambiguous answers; ensure each activity is solvable and correct. Use black outlines for activities that children should write on or color.`,
+story: `${common}\n\nCreate a children's storybook concept with an engaging title, a warm beginning, a clear problem, a helpful action, and a satisfying ending with a positive age-appropriate lesson. Provide a coherent story with named characters, simple dialogue, and page-by-page layout for 8 pages. For each page, provide a short amount of readable story text and a matching illustration description. Keep character appearance consistent across all pages. Use a charming picture-book illustration style and leave adequate margins. Do not invent a real author's name or publisher.`,
+flashcards: `${common}\n\nCreate a printable set of 12 educational flashcards about the topic. Arrange them in a clean grid suitable for cutting, with consistent card sizes, clear margins, readable large labels, simple colorful illustrations, and uncluttered backgrounds. Each card should teach one accurate, age-appropriate word, fact, number, letter, or concept connected to the topic. Ensure no text is cropped and every card is distinct.`,
+cover: `${common}\n\nCreate an attractive portrait A4 children's book cover. Use a clear large title based on the topic, delightful age-appropriate cartoon illustrations, a strong focal point, cheerful harmonious colors, and professional visual hierarchy. Leave safe margins and avoid clutter. Do not add author, publisher, creator name, logo, or watermark. Do not add extra text unless it improves the cover and is spelled correctly.`,
+learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`
+};
+return prompts[type];
+}
+$("buat").addEventListener("click",()=>{
+ const topic=$("tema").value.trim();
+ if(!topic){$("tema").focus();alert("Masukkan tema, objek, atau judul terlebih dahulu.");return;}
+ const type=document.querySelector('input[name="jenis"]:checked').value;
+ currentPrompt=makePrompt(topic,$("usia").value,$("bahasa").value,type);
+ $("prompt").textContent=currentPrompt;
+ $("hasil").classList.remove("hidden");
+ $("status").textContent="Prompt dibuat untuk: "+types[type]+".";
+ $("hasil").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("salin").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(currentPrompt);$("status").textContent="Prompt berhasil disalin. Tempelkan ke layanan AI pilihanmu.";}
+ catch(e){const range=document.createRange();range.selectNodeContents($("prompt"));const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);$("status").textContent="Pilih teks prompt, lalu salin melalui menu perangkat.";}
+});
+$("chatgpt").addEventListener("click",()=>window.open("https://chatgpt.com/","_blank","noopener,noreferrer"));
+$("tema").addEventListener("keydown",e=>{if(e.key==="Enter")$("buat").click();});
+</script>
+
+<!-- LOGIN KIDS DIGITAL CREATOR -->
+<div id="kdc-login" style="position:fixed;inset:0;z-index:99999;background:#fff7ed;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif;">
+  <div style="background:white;padding:28px;border-radius:20px;max-width:380px;width:100%;box-shadow:0 8px 30px #0002;">
+    <h2 style="text-align:center;color:#7c3aed;">Kids Digital Creator ✨</h2>
+    <p style="text-align:center;">Login untuk membuka aplikasi</p>
+    <form id="kdc-form">
+      <label for="kdc-email">Email</label>
+      <input id="kdc-email" type="email" required autocomplete="email" style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;">
+      <label for="kdc-password">Kata sandi</label>
+      <input id="kdc-password" type="password" required autocomplete="current-password" style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;">
+      <button id="kdc-submit" type="submit" style="width:100%;padding:13px;background:#7c3aed;color:white;border:0;border-radius:9px;font-weight:bold;">Login</button>
+    </form>
+    <p id="kdc-message" role="status" style="font-size:14px;"></p>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+// GANTI DUA NILAI DI BAWAH DENGAN DATA PROYEKMU
+const SUPABASE_URL = "https://lsfssufdrokijxruabhd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JHr6VU3RzMFKK5qqB3G0BQ_lzE_wn0w";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const loginBox = document.getElementById("kdc-login");
+const form = document.getElementById("kdc-form");
+const message = document.getElementById("kdc-message");
+const submit = document.getElementById("kdc-submit");
+
+async function checkAccess(user) {
+  const { data, error } = await supabase
+    .from("user_access")
+    .select("has_access")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data || data.has_access !== true) {
+    await supabase.auth.signOut();
+    throw new Error("Akun belum mendapat akses. Hubungi pemilik aplikasi.");
+  }
+
+  loginBox.remove();
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  submit.disabled = true;
+  message.textContent = "Memeriksa akun...";
+
+  try {
+    if (
+      SUPABASE_URL.includes("TEMPEL_") ||
+      SUPABASE_KEY.includes("TEMPEL_")
+    ) {
+      throw new Error("URL dan publishable key Supabase belum diisi.");
+    }
+
+    const email = document.getElementById("kdc-email").value.trim();
+    const password = document.getElementById("kdc-password").value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    await checkAccess(data.user);
+  } catch (error) {
+    message.textContent = error.message || "Login gagal. Coba lagi.";
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    checkAccess(session.user).catch((error) => {
+      message.textContent = error.message || "Akses belum tersedia.";
+    });
+  }
+});
+
+(async () => {
+  const { data } = await supabase.auth.getSession();
+  if (data.session?.user) {
+    try {
+      await checkAccess(data.session.user);
+    } catch (error) {
+      message.textContent = error.message || "Silakan login kembali.";
+    }
+  }
+})();
+</script>
+</body>
+</html>
