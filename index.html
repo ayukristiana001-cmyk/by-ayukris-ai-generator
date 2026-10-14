@@ -144,5 +144,102 @@ $("salin").addEventListener("click",async()=>{
 $("chatgpt").addEventListener("click",()=>window.open("https://chatgpt.com/","_blank","noopener,noreferrer"));
 $("tema").addEventListener("keydown",e=>{if(e.key==="Enter")$("buat").click();});
 </script>
+  
+<!-- LOGIN KIDS DIGITAL CREATOR -->
+<div id="kdc-login" style="position:fixed;inset:0;z-index:99999;background:#fff7ed;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif;">
+  <div style="background:white;padding:28px;border-radius:20px;max-width:380px;width:100%;box-shadow:0 8px 30px #0002;">
+    <h2 style="text-align:center;color:#7c3aed;">Kids Digital Creator ✨</h2>
+    <p style="text-align:center;">Login untuk membuka aplikasi</p>
+    <form id="kdc-form">
+      <label for="kdc-email">Email</label>
+      <input id="kdc-email" type="email" required autocomplete="email" style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;">
+      <label for="kdc-password">Kata sandi</label>
+      <input id="kdc-password" type="password" required autocomplete="current-password" style="box-sizing:border-box;width:100%;padding:12px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;">
+      <button id="kdc-submit" type="submit" style="width:100%;padding:13px;background:#7c3aed;color:white;border:0;border-radius:9px;font-weight:bold;">Login</button>
+    </form>
+    <p id="kdc-message" role="status" style="font-size:14px;"></p>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+// GANTI DUA NILAI DI BAWAH DENGAN DATA PROYEKMU
+const SUPABASE_URL = "https://lsfssufdrokijxruabhd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JHr6VU3RzMFKK5qqB3G0BQ_lzE_wn0w";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const loginBox = document.getElementById("kdc-login");
+const form = document.getElementById("kdc-form");
+const message = document.getElementById("kdc-message");
+const submit = document.getElementById("kdc-submit");
+
+async function checkAccess(user) {
+  const { data, error } = await supabase
+    .from("user_access")
+    .select("has_access")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data || data.has_access !== true) {
+    await supabase.auth.signOut();
+    throw new Error("Akun belum mendapat akses. Hubungi pemilik aplikasi.");
+  }
+
+  loginBox.remove();
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  submit.disabled = true;
+  message.textContent = "Memeriksa akun...";
+
+  try {
+    if (
+      SUPABASE_URL.includes("TEMPEL_") ||
+      SUPABASE_KEY.includes("TEMPEL_")
+    ) {
+      throw new Error("URL dan publishable key Supabase belum diisi.");
+    }
+
+    const email = document.getElementById("kdc-email").value.trim();
+    const password = document.getElementById("kdc-password").value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    await checkAccess(data.user);
+  } catch (error) {
+    message.textContent = error.message || "Login gagal. Coba lagi.";
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    checkAccess(session.user).catch((error) => {
+      message.textContent = error.message || "Akses belum tersedia.";
+    });
+  }
+});
+
+(async () => {
+  const { data } = await supabase.auth.getSession();
+  if (data.session?.user) {
+    try {
+      await checkAccess(data.session.user);
+    } catch (error) {
+      message.textContent = error.message || "Silakan login kembali.";
+    }
+  }
+})();
+</script>
 </body>
 </html>
