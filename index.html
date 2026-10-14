@@ -79,7 +79,7 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
       </select>
     </div>
   </div>
-  <div style="margin-top:20px"><button class="primary" id="buat" style="width:100%">✨ Buat Prompt</button></div>
+  <div style="margin-top:20px"><button class="primary" id="buat" style="width:100%">✨ Ayo Buat!</button></div>
 </section>
 
 <section id="hasil" class="card hidden">
@@ -128,7 +128,42 @@ learning: `${common}\n\nCreate a complete age-appropriate learning page about th
 };
 return prompts[type];
 }
-$("buat").addEventListener("click",()=>{
+$("buat").addEventListener("click", () => {
+const topic = $("tema").value.trim();
+
+if (!topic) {
+$("tema").focus();
+alert("Masukkan tema, objek, atau judul terlebih dahulu.");
+return;
+}
+
+const type = document.querySelector(
+'input[name="jenis"]:checked'
+).value;
+
+currentPrompt = makePrompt(
+topic,
+$("usia").value,
+$("bahasa").value,
+type
+);
+
+$("hasil").classList.remove("hidden");
+$("status").textContent =
+"Menghubungkan ke ChatGPT...";
+
+const chatUrl =
+"https://chatgpt.com/?q=" +
+encodeURIComponent(currentPrompt);
+
+window.location.href = chatUrl;
+});
+
+$("tema").addEventListener("keydown", e => {
+if (e.key === "Enter") {
+$("buat").click();
+}
+});
  const topic=$("tema").value.trim();
  if(!topic){$("tema").focus();alert("Masukkan tema, objek, atau judul terlebih dahulu.");return;}
  const type=document.querySelector('input[name="jenis"]:checked').value;
