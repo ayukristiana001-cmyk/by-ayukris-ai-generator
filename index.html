@@ -62,6 +62,23 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
     <input id="tema" maxlength="100" placeholder="Contoh: kucing, angka 1–10, kelinci yang suka menolong..." autocomplete="off">
     <p class="hint">Masukkan tema dalam Bahasa Indonesia atau Inggris. Pilih bahasa hasil yang kamu inginkan.</p>
   </div>
+  
+<div id="learning-category-wrap" class="hidden" style="margin-top:16px">
+  <label for="learning-category">📚 Pilih kategori materi belajar</label>
+  <select id="learning-category">
+    <option value="Belajar Membaca">📖 Belajar Membaca</option>
+    <option value="Berhitung">🔢 Berhitung</option>
+    <option value="Bahasa Inggris">🌐 Bahasa Inggris</option>
+    <option value="Sains Cilik">🔬 Sains Cilik</option>
+    <option value="Budaya Indonesia">🇮🇩 Budaya Indonesia</option>
+    <option value="Karakter Anak Hebat">💖 Karakter Anak Hebat</option>
+    <option value="Kecerdasan Finansial">💰 Kecerdasan Finansial</option>
+    <option value="Pendidikan Lingkungan">🌱 Pendidikan Lingkungan</option>
+    <option value="Keselamatan Diri">🛡️ Keselamatan Diri</option>
+    <option value="Persiapan Sekolah">🎒 Persiapan Sekolah</option>
+  </select>
+  <p class="hint">Pilih kategori, kemudian masukkan topik yang ingin dipelajari anak.</p>
+</div>
 
   <div id="story-command-wrap" class="hidden" style="margin-top:16px">
     <label for="story-command">📖 Perintah halaman buku cerita</label>
@@ -131,13 +148,42 @@ const types = {
 
 function makePrompt(topic, age, lang, type, storyCommand) {
 const common = `Create a complete, polished ${types[type]} about "${topic}". Target age: ${age}. All visible text must be written naturally and correctly in ${lang}. Use age-appropriate vocabulary, correct spelling, clear hierarchy, and a child-friendly design. Topic: "${topic}". If the topic was entered in another language, understand and translate or normalize it naturally for the selected output language. Do not include any creator name, brand name, signature, logo, or watermark.`;
+
+const learningCategory = type === "learning"
+  ? $("learning-category").value
+  : "";
 const prompts = {
 coloring: `${common}\n\nFORMAT: One portrait A4 printable worksheet page, high resolution. Add a cheerful colorful cartoon border with a few topic-related decorations. Place a large playful title at the top. Add a small color-example box near the upper-left showing a full-color miniature of the main subject. Center one large black-and-white coloring illustration with thick smooth enclosed outlines, white background, no shading, no gradients, and no gray tones. At the bottom add exactly four pastel educational fact boxes, each with a small colorful icon, short heading, and one or two accurate child-friendly sentences. For non-animal topics, use accurate facts about features, uses, or functions. Keep all elements balanced and inside the page.`,
 activity: `${common}\n\nCreate one print-ready portrait A4 activity worksheet. Choose suitable activities based on the topic, such as tracing lines or letters, counting, matching, simple maze, shadow matching, spot-the-difference, sorting, or beginning coding paths. Include clear short instructions, generous writing space, simple child-friendly illustrations, and a balanced layout. Make activities appropriate for the selected age. Avoid ambiguous answers; ensure each activity is solvable and correct. Use black outlines for activities that children should write on or color.`,
 story: makeStoryPrompt(topic, age, lang, storyCommand),
 flashcards: `${common}\n\nCreate a printable set of 12 educational flashcards about the topic. Arrange them in a clean grid suitable for cutting, with consistent card sizes, clear margins, readable large labels, simple colorful illustrations, and uncluttered backgrounds. Each card should teach one accurate, age-appropriate word, fact, number, letter, or concept connected to the topic. Ensure no text is cropped and every card is distinct.`,
 cover: `${common}\n\nCreate an attractive portrait A4 children's book cover. Use a clear large title based on the topic, delightful age-appropriate cartoon illustrations, a strong focal point, cheerful harmonious colors, and professional visual hierarchy. Leave safe margins and avoid clutter. Do not add author, publisher, creator name, logo, or watermark. Do not add extra text unless it improves the cover and is spelled correctly.`,
-learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`,
+
+learning: `${common}
+
+KATEGORI MATERI: ${learningCategory}.
+
+Buat satu materi belajar anak yang lengkap, menarik,
+akurat, dan sesuai usia yang dipilih.
+
+Sesuaikan isi dengan kategori:
+- Belajar Membaca: huruf, suku kata, membaca, dan menulis.
+- Berhitung: angka, penjumlahan, pengurangan, perkalian,
+  pembagian, dan soal cerita.
+- Bahasa Inggris: kosakata dan percakapan sederhana.
+- Sains Cilik: hewan, tumbuhan, cuaca, energi, dan alam.
+- Budaya Indonesia: budaya daerah, pahlawan, dan cerita rakyat.
+- Karakter Anak Hebat: kejujuran, disiplin, dan tanggung jawab.
+- Kecerdasan Finansial: uang, menabung, dan kebutuhan.
+- Pendidikan Lingkungan: sampah, kebersihan, dan pelestarian alam.
+- Keselamatan Diri: keselamatan lalu lintas dan keadaan darurat.
+- Persiapan Sekolah: huruf, angka, bentuk, logika, dan kemandirian.
+
+Sertakan judul, penjelasan sederhana, 3–5 poin pembelajaran,
+ilustrasi yang relevan, latihan praktik, dan kunci jawaban
+terpisah untuk orang tua atau guru. Gunakan tata letak A4 potret,
+tulisan yang mudah dibaca, dan desain ramah anak.`,
+
 comic: `${common}
 
 IMPORTANT: This must look like a REAL COMIC BOOK, NOT a conventional picture book or storybook.
@@ -226,13 +272,25 @@ STORY CONTINUITY:
 IMPORTANT CONTINUITY NOTE: If you are starting a new chat, paste a brief summary of the previous pages and the character descriptions into the prompt before generating this page, so the story and illustrations stay consistent.`;
 }
 
+
 function updateStoryCommandVisibility() {
-const type = document.querySelector('input[name="jenis"]:checked').value;
-$("story-command-wrap").classList.toggle("hidden", type !== "story");
+  const type = document.querySelector(
+    'input[name="jenis"]:checked'
+  ).value;
+
+  $("story-command-wrap").classList.toggle(
+    "hidden", type !== "story"
+  );
+
+  $("learning-category-wrap").classList.toggle(
+    "hidden", type !== "learning"
+  );
 }
+
 document.querySelectorAll('input[name="jenis"]').forEach(radio => {
-radio.addEventListener("change", updateStoryCommandVisibility);
+  radio.addEventListener("change", updateStoryCommandVisibility);
 });
+
 
 $("buat").addEventListener("click", () => {
 const topic = $("tema").value.trim();
