@@ -53,7 +53,8 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
     <label><input type="radio" name="jenis" value="story"> 📚 Buku cerita anak</label>
     <label><input type="radio" name="jenis" value="flashcards"> 🃏 Kartu edukasi</label>
     <label><input type="radio" name="jenis" value="cover"> 📘 Cover buku</label>
-    <label><input type="radio" name="jenis" value="learning"> 🌈 Materi belajar</label>
+    <label><input type="radio" name="jenis" value="learning"> 🌈 Materi belajar</label>  
+<label><input type="radio" name="jenis" value="comic"> 📖 Buku komik anak</label>
   </div>
 
   <div style="margin-top:18px">
@@ -108,13 +109,15 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
 <script>
 const $ = id => document.getElementById(id);
 let currentPrompt = "";
+
 const types = {
-coloring: "worksheet mewarnai anak",
-activity: "worksheet aktivitas edukasi anak",
-story: "buku cerita anak",
-flashcards: "kartu edukasi anak",
-cover: "cover buku anak",
-learning: "materi belajar anak"
+  coloring: "worksheet mewarnai anak",
+  activity: "worksheet aktivitas edukasi anak",
+  story: "buku cerita anak",
+  flashcards: "kartu edukasi anak",
+  cover: "cover buku anak",
+  learning: "materi belajar anak",
+  comic: "buku komik anak"
 };
 function makePrompt(topic, age, lang, type) {
 const common = `Create a complete, polished ${types[type]} about "${topic}". Target age: ${age}. All visible text must be written naturally and correctly in ${lang}. Use age-appropriate vocabulary, correct spelling, clear hierarchy, and a child-friendly design. Topic: "${topic}". If the topic was entered in another language, understand and translate or normalize it naturally for the selected output language. Do not include any creator name, brand name, signature, logo, or watermark.`;
@@ -124,7 +127,28 @@ activity: `${common}\n\nCreate one print-ready portrait A4 activity worksheet. C
 story: `${common}\n\nCreate a children's storybook concept with an engaging title, a warm beginning, a clear problem, a helpful action, and a satisfying ending with a positive age-appropriate lesson. Provide a coherent story with named characters, simple dialogue, and page-by-page layout for 8 pages. For each page, provide a short amount of readable story text and a matching illustration description. Keep character appearance consistent across all pages. Use a charming picture-book illustration style and leave adequate margins. Do not invent a real author's name or publisher.`,
 flashcards: `${common}\n\nCreate a printable set of 12 educational flashcards about the topic. Arrange them in a clean grid suitable for cutting, with consistent card sizes, clear margins, readable large labels, simple colorful illustrations, and uncluttered backgrounds. Each card should teach one accurate, age-appropriate word, fact, number, letter, or concept connected to the topic. Ensure no text is cropped and every card is distinct.`,
 cover: `${common}\n\nCreate an attractive portrait A4 children's book cover. Use a clear large title based on the topic, delightful age-appropriate cartoon illustrations, a strong focal point, cheerful harmonious colors, and professional visual hierarchy. Leave safe margins and avoid clutter. Do not add author, publisher, creator name, logo, or watermark. Do not add extra text unless it improves the cover and is spelled correctly.`,
-learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`
+learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`,
+comic: `${common}
+
+FORMAT: Create an Indonesian or English children's comic book with exactly 8 separate square pages, each designed for a physical print size of 20 x 20 cm, high resolution, full color, with safe print margins.
+
+PAGE STRUCTURE:
+- Page 1 is the front cover. It has no page number.
+- Pages 2 through 8 are story pages, numbered 1 through 7 respectively.
+- Each page must be a separate, standalone square illustration. Never combine multiple pages into a collage, grid, contact sheet, or single image.
+- Use clear comic panels, expressive speech balloons, readable dialogue, and balanced composition.
+- Keep the main characters' appearance, colors, proportions, clothing or markings, and personalities consistent on every page.
+- Create a coherent story with a beginning, a problem, a clever solution, and a satisfying ending.
+- Use age-appropriate vocabulary and natural dialogue for ${age}.
+- Match every illustration to its dialogue and story events. Ensure the story continues logically from one page to the next.
+- Use vibrant, polished 3D cartoon illustrations suitable for children.
+- Make all text large, legible, correctly spelled, and entirely in ${lang}.
+- Keep speech balloons inside the panels and away from important character faces.
+- Do not add creator names, brand names, signatures, logos, or watermarks.
+- Do not put a page number on the cover.
+- Deliver the pages as eight separate images, not a combined layout.
+
+First establish a character reference and an 8-page story plan, then create each page individually in order.`
 };
 return prompts[type];
 }
