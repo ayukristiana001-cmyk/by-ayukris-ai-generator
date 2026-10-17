@@ -128,27 +128,58 @@ story: `${common}\n\nCreate a children's storybook concept with an engaging titl
 flashcards: `${common}\n\nCreate a printable set of 12 educational flashcards about the topic. Arrange them in a clean grid suitable for cutting, with consistent card sizes, clear margins, readable large labels, simple colorful illustrations, and uncluttered backgrounds. Each card should teach one accurate, age-appropriate word, fact, number, letter, or concept connected to the topic. Ensure no text is cropped and every card is distinct.`,
 cover: `${common}\n\nCreate an attractive portrait A4 children's book cover. Use a clear large title based on the topic, delightful age-appropriate cartoon illustrations, a strong focal point, cheerful harmonious colors, and professional visual hierarchy. Leave safe margins and avoid clutter. Do not add author, publisher, creator name, logo, or watermark. Do not add extra text unless it improves the cover and is spelled correctly.`,
 learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`,
+
 comic: `${common}
 
-FORMAT: Create an Indonesian or English children's comic book with exactly 8 separate square pages, each designed for a physical print size of 20 x 20 cm, high resolution, full color, with safe print margins.
+IMPORTANT: This must look like a REAL COMIC BOOK, NOT a conventional picture book or storybook.
 
-PAGE STRUCTURE:
-- Page 1 is the front cover. It has no page number.
-- Pages 2 through 8 are story pages, numbered 1 through 7 respectively.
-- Each page must be a separate, standalone square illustration. Never combine multiple pages into a collage, grid, contact sheet, or single image.
-- Use clear comic panels, expressive speech balloons, readable dialogue, and balanced composition.
-- Keep the main characters' appearance, colors, proportions, clothing or markings, and personalities consistent on every page.
-- Create a coherent story with a beginning, a problem, a clever solution, and a satisfying ending.
-- Use age-appropriate vocabulary and natural dialogue for ${age}.
-- Match every illustration to its dialogue and story events. Ensure the story continues logically from one page to the next.
-- Use vibrant, polished 3D cartoon illustrations suitable for children.
-- Make all text large, legible, correctly spelled, and entirely in ${lang}.
-- Keep speech balloons inside the panels and away from important character faces.
-- Do not add creator names, brand names, signatures, logos, or watermarks.
-- Do not put a page number on the cover.
-- Deliver the pages as eight separate images, not a combined layout.
+PAGE FORMAT:
+Create exactly 8 separate square pages, each with a 1:1 aspect ratio designed for printing at 20 x 20 cm in high resolution.
 
-First establish a character reference and an 8-page story plan, then create each page individually in order.`
+PAGE 1 — COVER:
+Create a colorful comic cover with the title "${topic}", a dramatic cartoon illustration, and bold comic-book lettering. No page number on the cover.
+
+PAGES 2–8 — COMIC STORY:
+Create 7 separate comic story pages numbered 1 through 7. Each page must contain 4 to 6 DISTINCT COMIC PANELS arranged in a clear reading order, normally left to right and top to bottom.
+
+ESSENTIAL COMIC PANEL RULES:
+- Every story page MUST have multiple rectangular or square panels.
+- Draw clearly visible, thick black borders around EVERY panel.
+- Separate panels with visible white gutters or spaces.
+- Use a deliberate comic layout, such as 2 panels on the top row and 2 or 3 panels below, or other clear panel arrangements.
+- Every panel must show a different moment, action, reaction, camera angle, or stage of the conversation.
+- Use close-ups, medium shots, wide shots, action poses, and facial reactions to tell the story visually.
+- Place speech balloons INSIDE the relevant panels, with tails pointing to the character speaking.
+- Use narration boxes only when helpful. Let character dialogue carry the story.
+- Make panel borders and divisions unmistakable, even when viewed as a small printed page.
+- Never use one large full-page illustration for a story page.
+- Never create a picture-book layout with one large illustration and a paragraph underneath.
+- Never merge the entire page into one continuous scene without panel divisions.
+- Never combine all 8 pages into one image, collage, grid, or contact sheet.
+
+STORY AND CHARACTERS:
+- Tell a complete, coherent story about "${topic}" with a clear beginning, conflict, character interactions, climax, and ending.
+- Keep character appearance, colors, clothing, proportions, and identifying features consistent across all pages.
+- Give each page a clear story purpose and make events continue logically from the previous page.
+- Use expressive faces, body language, movement lines, and comic-style visual effects where appropriate.
+- Make the story engaging, safe, and appropriate for children aged ${age}.
+
+TEXT AND PRINT QUALITY:
+- All visible text, narration, sound effects, and dialogue must be in ${lang}.
+- Use natural language, correct spelling, and large, readable lettering.
+- Keep all text and important artwork within safe print margins.
+- Ensure speech balloons do not cover faces or important actions.
+- Use polished, colorful 3D cartoon artwork with a consistent visual style.
+- Do not include a creator name, brand name, signature, logo, or watermark.
+
+OUTPUT REQUIREMENTS:
+- Exactly 8 individual square images, generated one page at a time.
+- Page 1 is the cover without a page number.
+- Pages 2–8 are story pages with page numbers 1–7.
+- Before generating, establish the character reference and plan the panel-by-panel story for all 7 story pages.
+- Generate the cover first, then generate each story page separately in sequence.
+- Prioritize clearly visible comic panels over decorative full-page illustrations.`
+
 };
 return prompts[type];
 }
