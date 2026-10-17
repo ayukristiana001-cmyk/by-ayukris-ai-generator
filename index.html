@@ -103,14 +103,8 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
 </section>
 
 <section id="hasil" class="card hidden">
-  <h2 style="margin:0 0 8px">Prompt siap digunakan!</h2>
-  <p class="hint" style="margin-bottom:14px">Salin prompt ini dan tempelkan ke layanan AI yang mendukung pembuatan gambar atau teks. Untuk Buku Cerita, buat sampul dan setiap halaman secara terpisah.</p>
-  <div id="prompt" class="promptbox"></div>
-  <div class="grid">
-    <button class="secondary" id="salin">📋 Salin Prompt</button>
-    <button class="primary" id="chatgpt">💬 Buka ChatGPT</button>
-  </div>
-  <p id="status" class="small" aria-live="polite"></p>
+  <h2 style="margin:0 0 8px">Mengarahkan ke ChatGPT...</h2>
+  <p class="hint">Prompt akan dibuka langsung di ChatGPT.</p>
 </section>
 
 <div class="features">
@@ -256,35 +250,10 @@ const type = document.querySelector('input[name="jenis"]:checked').value;
 currentPrompt = makePrompt(topic, $("usia").value, $("bahasa").value, type, $("story-command").value);
 currentChatUrl = "https://chatgpt.com/?q=" + encodeURIComponent(currentPrompt);
 
-// Pertahankan alur lama untuk produk selain Buku Cerita.
-// Khusus Buku Cerita, tampilkan prompt dan biarkan pengguna memilih halaman berikutnya.
-if (type !== "story") {
-  window.location.href = currentChatUrl;
-  return;
-}
-$("prompt").textContent = currentPrompt;
-$("hasil").classList.remove("hidden");
-$("status").textContent = "Prompt satu halaman siap. Pilih Sampul atau halaman berikutnya, lalu salin prompt atau buka ChatGPT.";
-$("hasil").scrollIntoView({behavior:"smooth", block:"start"});
+// Semua jenis produk langsung diarahkan ke ChatGPT tanpa menampilkan prompt di aplikasi.
+window.location.href = currentChatUrl;
 });
 
-$("salin").addEventListener("click", async () => {
-if (!currentPrompt) return;
-try {
-await navigator.clipboard.writeText(currentPrompt);
-$("status").textContent = "Prompt berhasil disalin. Tempelkan ke layanan AI pilihanmu.";
-} catch (e) {
-$("status").textContent = "Salin otomatis tidak tersedia di browser ini. Tekan lama teks prompt, lalu pilih Salin.";
-}
-});
-
-$("chatgpt").addEventListener("click", () => {
-if (!currentPrompt) {
-alert("Masukkan tema lalu tekan Ayo Buat terlebih dahulu.");
-return;
-}
-window.open(currentChatUrl, "_blank");
-});
 
 $("tema").addEventListener("keydown", e => {
 if (e.key === "Enter") $("buat").click();
