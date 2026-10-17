@@ -53,14 +53,33 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
     <label><input type="radio" name="jenis" value="story"> 📚 Buku cerita anak</label>
     <label><input type="radio" name="jenis" value="flashcards"> 🃏 Kartu edukasi</label>
     <label><input type="radio" name="jenis" value="cover"> 📘 Cover buku</label>
-    <label><input type="radio" name="jenis" value="learning"> 🌈 Materi belajar</label>  
-<label><input type="radio" name="jenis" value="comic"> 📖 Buku komik anak</label>
+    <label><input type="radio" name="jenis" value="learning"> 🌈 Materi belajar</label>
+    <label><input type="radio" name="jenis" value="comic"> 📖 Buku komik anak</label>
   </div>
 
   <div style="margin-top:18px">
     <label for="tema">✏️ Tema, objek, atau judul</label>
     <input id="tema" maxlength="100" placeholder="Contoh: kucing, angka 1–10, kelinci yang suka menolong..." autocomplete="off">
-    <p class="hint">Masukkan tema dalam Bahasa Indonesia atau Inggris. Lalu akan mengarahkan AI untuk menggunakan bahasa yang sesuai dengan pilihan bahasa produk.</p>
+    <p class="hint">Masukkan tema dalam Bahasa Indonesia atau Inggris. Pilih bahasa hasil yang kamu inginkan.</p>
+  </div>
+
+  <div id="story-command-wrap" class="hidden" style="margin-top:16px">
+    <label for="story-command">📖 Perintah halaman buku cerita</label>
+    <select id="story-command">
+      <option value="SAMPUL">Sampul buku (halaman pembuka)</option>
+      <option value="HALAMAN 1">Halaman 1</option>
+      <option value="HALAMAN 2">Halaman 2</option>
+      <option value="HALAMAN 3">Halaman 3</option>
+      <option value="HALAMAN 4">Halaman 4</option>
+      <option value="HALAMAN 5">Halaman 5</option>
+      <option value="HALAMAN 6">Halaman 6</option>
+      <option value="HALAMAN 7">Halaman 7</option>
+      <option value="HALAMAN 8">Halaman 8</option>
+      <option value="HALAMAN 9">Halaman 9</option>
+      <option value="HALAMAN 10">Halaman 10</option>
+      <option value="HALAMAN 11">Halaman 11</option>
+    </select>
+    <p class="hint">Buku cerita berjumlah 12 halaman total: 1 sampul + 11 halaman cerita. Pilih satu halaman setiap kali menekan “Ayo Buat!”.</p>
   </div>
 
   <div class="grid">
@@ -83,17 +102,6 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
   <div style="margin-top:20px"><button class="primary" id="buat" style="width:100%">✨ Ayo Buat!</button></div>
 </section>
 
-<section id="hasil" class="card hidden">
-  <h2 style="margin:0 0 8px">Prompt siap digunakan!</h2>
-  <p class="hint" style="margin-bottom:14px">Salin prompt ini dan tempelkan ke layanan AI yang mendukung pembuatan gambar atau teks. Periksa hasil sebelum dicetak atau dijual.</p>
-  <div id="prompt" class="promptbox"></div>
-  <div class="grid">
-    <button class="secondary" id="salin">📋 Salin Prompt</button>
-    <button class="primary" id="chatgpt">💬 Buka ChatGPT</button>
-  </div>
-  <p id="status" class="small" aria-live="polite"></p>
-</section>
-
 <div class="features">
   <div class="feature">🧠<br>Beragam produk edukasi</div>
   <div class="feature">📝<br>Prompt bisa disesuaikan</div>
@@ -109,6 +117,7 @@ footer{text-align:center;padding:22px 10px;font-size:.9rem;line-height:1.5}
 <script>
 const $ = id => document.getElementById(id);
 let currentPrompt = "";
+let currentChatUrl = "";
 
 const types = {
   coloring: "worksheet mewarnai anak",
@@ -119,16 +128,16 @@ const types = {
   learning: "materi belajar anak",
   comic: "buku komik anak"
 };
-function makePrompt(topic, age, lang, type) {
+
+function makePrompt(topic, age, lang, type, storyCommand) {
 const common = `Create a complete, polished ${types[type]} about "${topic}". Target age: ${age}. All visible text must be written naturally and correctly in ${lang}. Use age-appropriate vocabulary, correct spelling, clear hierarchy, and a child-friendly design. Topic: "${topic}". If the topic was entered in another language, understand and translate or normalize it naturally for the selected output language. Do not include any creator name, brand name, signature, logo, or watermark.`;
 const prompts = {
 coloring: `${common}\n\nFORMAT: One portrait A4 printable worksheet page, high resolution. Add a cheerful colorful cartoon border with a few topic-related decorations. Place a large playful title at the top. Add a small color-example box near the upper-left showing a full-color miniature of the main subject. Center one large black-and-white coloring illustration with thick smooth enclosed outlines, white background, no shading, no gradients, and no gray tones. At the bottom add exactly four pastel educational fact boxes, each with a small colorful icon, short heading, and one or two accurate child-friendly sentences. For non-animal topics, use accurate facts about features, uses, or functions. Keep all elements balanced and inside the page.`,
 activity: `${common}\n\nCreate one print-ready portrait A4 activity worksheet. Choose suitable activities based on the topic, such as tracing lines or letters, counting, matching, simple maze, shadow matching, spot-the-difference, sorting, or beginning coding paths. Include clear short instructions, generous writing space, simple child-friendly illustrations, and a balanced layout. Make activities appropriate for the selected age. Avoid ambiguous answers; ensure each activity is solvable and correct. Use black outlines for activities that children should write on or color.`,
-story: `${common}\n\nCreate a children's storybook concept with an engaging title, a warm beginning, a clear problem, a helpful action, and a satisfying ending with a positive age-appropriate lesson. Provide a coherent story with named characters, simple dialogue, and page-by-page layout for 8 pages. For each page, provide a short amount of readable story text and a matching illustration description. Keep character appearance consistent across all pages. Use a charming picture-book illustration style and leave adequate margins. Do not invent a real author's name or publisher.`,
+story: makeStoryPrompt(topic, age, lang, storyCommand),
 flashcards: `${common}\n\nCreate a printable set of 12 educational flashcards about the topic. Arrange them in a clean grid suitable for cutting, with consistent card sizes, clear margins, readable large labels, simple colorful illustrations, and uncluttered backgrounds. Each card should teach one accurate, age-appropriate word, fact, number, letter, or concept connected to the topic. Ensure no text is cropped and every card is distinct.`,
 cover: `${common}\n\nCreate an attractive portrait A4 children's book cover. Use a clear large title based on the topic, delightful age-appropriate cartoon illustrations, a strong focal point, cheerful harmonious colors, and professional visual hierarchy. Leave safe margins and avoid clutter. Do not add author, publisher, creator name, logo, or watermark. Do not add extra text unless it improves the cover and is spelled correctly.`,
 learning: `${common}\n\nCreate a complete age-appropriate learning page about the topic. Include a clear title, a simple explanation, 3–5 key learning points, a relevant illustration, and one short practice activity with a correct answer key placed separately or clearly marked for the adult. Use accurate information, short readable sentences, friendly visuals, and a clean portrait A4 printable layout. Adapt the complexity to the selected age.`,
-
 comic: `${common}
 
 IMPORTANT: This must look like a REAL COMIC BOOK, NOT a conventional picture book or storybook.
@@ -179,53 +188,72 @@ OUTPUT REQUIREMENTS:
 - Before generating, establish the character reference and plan the panel-by-panel story for all 7 story pages.
 - Generate the cover first, then generate each story page separately in sequence.
 - Prioritize clearly visible comic panels over decorative full-page illustrations.`
-
 };
 return prompts[type];
 }
+
+function makeStoryPrompt(topic, age, lang, command) {
+const base = `You are creating one page at a time for a children's picture storybook titled "${topic}". Target age: ${age}. All visible text must be natural, correctly spelled ${lang}, suitable for children, and readable. The complete book has EXACTLY 12 pages TOTAL: 1 cover plus 11 story pages. Never generate multiple pages in one response or one image. Generate only the one page specified below. Every page must be portrait A4, aspect ratio 210:297 (approximately 0.707:1), high resolution and print-ready, with safe margins. Never use square or landscape format. Keep the illustration style, character design, colors, clothing, proportions, and locations consistent. Do not include any creator name, brand name, signature, logo, watermark, author name, or publisher name.`;
+if (command === "SAMPUL") {
+return `${base}
+
+CURRENT COMMAND: CREATE THE COVER ONLY.
+Create one single portrait A4 book cover for "${topic}". Show the title clearly and prominently, with one beautiful, child-friendly illustration that introduces the main characters and story world. The cover is not a story page and must not have a page number. Do not include any interior pages, page grids, collages, or multiple-page previews. Use an attractive professional picture-book layout with clear title hierarchy and print-safe margins. Output only one cover image.`;
+}
+const n = Number(command.replace("HALAMAN ", ""));
+const role = n === 1 ? "Introduce the setting and main character, and begin the story." :
+n === 2 ? "Develop the character's goal or introduce the main problem." :
+n === 3 ? "Show the problem becoming clearer and the character deciding what to do." :
+n === 4 ? "Show the character taking the first meaningful action." :
+n === 5 ? "Introduce a complication or an unexpected challenge." :
+n === 6 ? "Show the character trying again or receiving useful help." :
+n === 7 ? "Build toward the climax with an important choice or discovery." :
+n === 8 ? "Show the key turning point of the story." :
+n === 9 ? "Show how the character solves the main problem." :
+n === 10 ? "Show the positive result and how the characters feel." :
+"Give the story a satisfying ending and a simple positive moral that fits the events.";
+return `${base}
+
+CURRENT COMMAND: CREATE STORY PAGE ${n} ONLY (this is page ${n} of the 11 story pages, after the cover).
+STORY CONTINUITY:
+- Continue the same story about "${topic}" and keep events logical.
+- Page purpose for this page: ${role}
+- Create one short, coherent story segment, not the entire story.
+- Include a small amount of readable story text and a matching illustration. Use short dialogue if useful.
+- Do not repeat the cover. Do not create a cover, page collection, collage, grid, or multiple pages.
+- Add a small page number "${n}" at the bottom, within the safe margin.
+- Output exactly one portrait A4 page image, aspect ratio 210:297 (approximately 0.707:1), and nothing else.
+IMPORTANT CONTINUITY NOTE: If you are starting a new chat, paste a brief summary of the previous pages and the character descriptions into the prompt before generating this page, so the story and illustrations stay consistent.`;
+}
+
+function updateStoryCommandVisibility() {
+const type = document.querySelector('input[name="jenis"]:checked').value;
+$("story-command-wrap").classList.toggle("hidden", type !== "story");
+}
+document.querySelectorAll('input[name="jenis"]').forEach(radio => {
+radio.addEventListener("change", updateStoryCommandVisibility);
+});
+
 $("buat").addEventListener("click", () => {
 const topic = $("tema").value.trim();
-
 if (!topic) {
 $("tema").focus();
 alert("Masukkan tema, objek, atau judul terlebih dahulu.");
 return;
 }
+const type = document.querySelector('input[name="jenis"]:checked').value;
+currentPrompt = makePrompt(topic, $("usia").value, $("bahasa").value, type, $("story-command").value);
+currentChatUrl = "https://chatgpt.com/?q=" + encodeURIComponent(currentPrompt);
 
-const type = document.querySelector(
-'input[name="jenis"]:checked'
-).value;
-
-currentPrompt = makePrompt(
-topic,
-$("usia").value,
-$("bahasa").value,
-type
-);
-
-const chatUrl =
-"https://chatgpt.com/?q=" +
-encodeURIComponent(currentPrompt);
-
-window.location.href = chatUrl;
+// Semua jenis produk langsung diarahkan ke ChatGPT tanpa menampilkan prompt di aplikasi.
+window.location.href = currentChatUrl;
 });
 
-$("chatgpt").addEventListener("click", () => {
-if (!currentPrompt) {
-alert("Masukkan tema dan tekan Buat Produk terlebih dahulu.");
-return;
-}
-
-window.location.href =
-"https://chatgpt.com/?q=" +
-encodeURIComponent(currentPrompt);
-});
 
 $("tema").addEventListener("keydown", e => {
-if (e.key === "Enter") {
-$("buat").click();
-}
+if (e.key === "Enter") $("buat").click();
 });
+updateStoryCommandVisibility();
 </script>
 
 <!-- LOGIN KIDS DIGITAL CREATOR -->
@@ -247,11 +275,8 @@ $("buat").click();
 <script type="module">
 import { createClient } from
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-// GANTI DUA NILAI DI BAWAH DENGAN DATA PROYEKMU
 const SUPABASE_URL = "https://lsfssufdrokijxruabhd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_JHr6VU3RzMFKK5qqB3G0BQ_lzE_wn0w";
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const loginBox = document.getElementById("kdc-login");
 const form = document.getElementById("kdc-form");
@@ -259,43 +284,22 @@ const message = document.getElementById("kdc-message");
 const submit = document.getElementById("kdc-submit");
 
 async function checkAccess(user) {
-  const { data, error } = await supabase
-    .from("user_access")
-    .select("has_access")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
+  const { data, error } = await supabase.from("user_access").select("has_access").eq("user_id", user.id).maybeSingle();
   if (error) throw error;
-
   if (!data || data.has_access !== true) {
     await supabase.auth.signOut();
     throw new Error("Akun belum mendapat akses. Hubungi pemilik aplikasi.");
   }
-
   loginBox.remove();
 }
-
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   submit.disabled = true;
   message.textContent = "Memeriksa akun...";
-
   try {
-    if (
-      SUPABASE_URL.includes("TEMPEL_") ||
-      SUPABASE_KEY.includes("TEMPEL_")
-    ) {
-      throw new Error("URL dan publishable key Supabase belum diisi.");
-    }
-
     const email = document.getElementById("kdc-email").value.trim();
     const password = document.getElementById("kdc-password").value;
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     await checkAccess(data.user);
   } catch (error) {
@@ -304,23 +308,18 @@ form.addEventListener("submit", async (event) => {
     submit.disabled = false;
   }
 });
-
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
-    checkAccess(session.user).catch((error) => {
+    checkAccess(session.user).catch(error => {
       message.textContent = error.message || "Akses belum tersedia.";
     });
   }
 });
-
 (async () => {
   const { data } = await supabase.auth.getSession();
   if (data.session?.user) {
-    try {
-      await checkAccess(data.session.user);
-    } catch (error) {
-      message.textContent = error.message || "Silakan login kembali.";
-    }
+    try { await checkAccess(data.session.user); }
+    catch (error) { message.textContent = error.message || "Silakan login kembali."; }
   }
 })();
 </script>
